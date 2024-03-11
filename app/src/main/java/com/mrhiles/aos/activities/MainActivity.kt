@@ -7,9 +7,11 @@ import androidx.viewpager2.widget.ViewPager2
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
 import com.mrhiles.aos.adapter.BottomFragmentPager
+import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
 import com.mrhiles.aos.databinding.ActivityMainBinding
 import com.mrhiles.aos.fragments.BottomChatFragment
 import com.mrhiles.aos.fragments.BottomLoginFragment
+import retrofit2.Call
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
