@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_bnv_home" android:title="홈" android:icon="@drawable/bnv_home"/>
+    <item android:id="@+id/menu_bnv_list" android:title="강의목록" android:icon="@drawable/bnv_list"/>
+    <item android:id="@+id/empty" android:title="" android:enabled="false"/>
+    <item android:id="@+id/menu_bnv_reserved" android:title="내 예약" android:icon="@drawable/bnv_reserved"/>
+    <item android:id="@+id/menu_bnv_profile" android:title="프로필" android:icon="@drawable/bnv_profile"/>
+</menu>
