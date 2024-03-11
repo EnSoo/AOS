@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.kakao.sdk.common.util.Utility
+import com.mrhiles.aos.activities.MainActivity
 import com.mrhiles.aos.adapter.StudyRoomRecyclerAdapter
 import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
 import com.mrhiles.aos.data.StudyRoom
@@ -21,7 +22,6 @@ import retrofit2.http.Query
 
 class BottomHomeFragment : Fragment(){
     // kakao search API 응답결과 객체 참조변수
-    var searchStudyRoomResponse:KakaoSearchStudyRoomRespnose?=null
     //val documents:MutableList<StudyRoom> by lazy { mutableListOf() }
     private val binding by lazy { FragmentBottomHomeBinding.inflate(layoutInflater) }
     override fun onCreateView(
@@ -35,35 +35,9 @@ class BottomHomeFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.inputLayout.bringToFront()
-        val keyHash:String = Utility.getKeyHash(requireContext())
-        //키해시 발급
-        //Log.d("keyHash",keyHash)
-        val call=getRetrofitCall()
-        call.enqueue(object : Callback<KakaoSearchStudyRoomRespnose>{
-            override fun onResponse(
-                call: Call<KakaoSearchStudyRoomRespnose>,
-                response: Response<KakaoSearchStudyRoomRespnose>
-            ) {
-                searchStudyRoomResponse=response.body()
-
-            }
-
-            override fun onFailure(call: Call<KakaoSearchStudyRoomRespnose>, t: Throwable) {
-                Toast.makeText(requireContext(), "서버 오류가 있습니다.", Toast.LENGTH_SHORT).show()
-            }
-
-        })
-        // document가 null이 아닐 경우 처리 필요
-        //binding.homeRecycler.adapter = StudyRoomRecyclerAdapter(requireContext(), searchStudyRoomResponse!!.documents)
+        val ma:MainActivity = activity as MainActivity
+        ma.searchStudyRoomResponse ?: return // null일 경우 서버로딩이 완료되지 않았을 수도 있어서 리턴
+        binding.homeRecycler.adapter = StudyRoomRecyclerAdapter(requireContext(), ma.searchStudyRoomResponse!!.documents)
 
     }
-
-    //Retrofit Call 생성 메소드
-    fun getRetrofitCall(longitute:String="", latitude:String="", radius:Int=1000, page:Int=1, sort:String="accuracy") : Call<KakaoSearchStudyRoomRespnose> {
-        val retrofit= RetrofitHelper.getRetrofitInstance("https://dapi.kakao.com")
-        val retrofitService=retrofit.create(RetrofitService::class.java)
-        return retrofitService.searchStudyRoomToString(longitute="", latitude="", radius=1000, page=1, sort="accuracy")
-    }
-    //스터디룸 서치 메소드
-
 }

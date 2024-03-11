@@ -20,7 +20,7 @@ class StudyRoomRecyclerAdapter(val context:Context, val documents:List<StudyRoom
         else holder.binding.tvDistance.text=studyRoom.distance
         holder.binding.placeName.text=studyRoom.place_name
         holder.binding.tvCategory.text=studyRoom.category_name
-        holder.binding.phoneNumber.text="+82${studyRoom.phone}"
+        holder.binding.phoneNumber.text="+82 ${studyRoom.phone}"
 
     }
 
