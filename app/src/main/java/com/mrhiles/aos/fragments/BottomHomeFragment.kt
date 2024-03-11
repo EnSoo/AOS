@@ -5,9 +5,18 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.mrhiles.aos.adapter.StudyRoomRecyclerAdapter
+import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
+import com.mrhiles.aos.data.StudyRoom
 import com.mrhiles.aos.databinding.FragmentBottomHomeBinding
+import com.mrhiles.aos.network.RetrofitHelper
+import com.mrhiles.aos.network.RetrofitService
+import retrofit2.Call
 
 class BottomHomeFragment : Fragment(){
+    // kakao search API 응답결과 객체 참조변수
+    var searchPlaceResponse:KakaoSearchStudyRoomRespnose?=null
+    val documents:MutableList<StudyRoom> by lazy { mutableListOf() }
     private val binding by lazy { FragmentBottomHomeBinding.inflate(layoutInflater) }
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -20,5 +29,9 @@ class BottomHomeFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.inputLayout.bringToFront()
+        binding.homeRecycler.adapter=StudyRoomRecyclerAdapter(requireContext(),documents)
     }
+
+    //스터디룸 서치 메소드
+
 }

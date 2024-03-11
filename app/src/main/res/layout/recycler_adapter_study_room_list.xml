@@ -5,7 +5,6 @@ android:layout_height="wrap_content"
 android:padding="16dp"
 xmlns:app="http://schemas.android.com/apk/res-auto">
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/iv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
         <RelativeLayout
@@ -49,6 +48,15 @@ xmlns:app="http://schemas.android.com/apk/res-auto">
                 android:text="장소이름"
                 android:textStyle="bold"
                 android:textSize="16dp"/>
+            <TextView
+                android:id="@+id/phone_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentBottom="true"
+                android:text="전화번호"
+                android:textColor="@color/black"
+                android:autoLink="phone"/>
             <ImageView
                 android:id="@+id/favor"
                 android:layout_width="wrap_content"
