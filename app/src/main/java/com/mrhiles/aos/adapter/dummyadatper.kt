@@ -1,4 +1,4 @@
 package com.mrhiles.aos.adapter
 
-class adapterdummy {
+class dummyadatper {
 }
