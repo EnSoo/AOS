@@ -1,11 +1,13 @@
 package com.mrhiles.aos.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.kakao.sdk.common.util.Utility
 import com.mrhiles.aos.adapter.StudyRoomRecyclerAdapter
 import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
 import com.mrhiles.aos.data.StudyRoom
@@ -33,6 +35,9 @@ class BottomHomeFragment : Fragment(){
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.inputLayout.bringToFront()
+        val keyHash:String = Utility.getKeyHash(requireContext())
+        //키해시 발급
+        //Log.d("keyHash",keyHash)
         val call=getRetrofitCall()
         call.enqueue(object : Callback<KakaoSearchStudyRoomRespnose>{
             override fun onResponse(
@@ -49,7 +54,7 @@ class BottomHomeFragment : Fragment(){
 
         })
         // document가 null이 아닐 경우 처리 필요
-        binding.homeRecycler.adapter = StudyRoomRecyclerAdapter(requireContext(), searchStudyRoomResponse!!.documents)
+        //binding.homeRecycler.adapter = StudyRoomRecyclerAdapter(requireContext(), searchStudyRoomResponse!!.documents)
 
     }
 
