@@ -3,6 +3,9 @@ package com.mrhiles.aos.adapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import androidx.viewpager2.widget.ViewPager2
+import com.mrhiles.aos.G
+import com.mrhiles.aos.activities.MainActivity
 import com.mrhiles.aos.fragments.BottomChatFragment
 import com.mrhiles.aos.fragments.BottomHomeFragment
 import com.mrhiles.aos.fragments.BottomListFragment
