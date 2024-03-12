@@ -3,6 +3,7 @@ package com.mrhiles.aos.network
 import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Query
 
@@ -12,4 +13,8 @@ interface RetrofitService {
     @Headers("Authorization: KakaoAK e85398842cfcf70cda90f41067f11aa6")
     @GET("/v2/local/search/keyword.json")
     fun searchStudyRoomToString(@Query("query") query:String="스터디룸", @Query("x") longitute:String="", @Query("y") latitude:String="", @Query("radius") radius:Int=1000, @Query("page") page:Int=1,@Query("sort") sort:String="accuracy") : Call<KakaoSearchStudyRoomRespnose>
+
+    //네아로 회원정보 프로필 api.. 요청
+    @GET("/v1/nid/me")
+    fun getNidUserInfo(@Header("Authorization") authorization:String) : Call<String>
 }
