@@ -5,6 +5,7 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.gson.Gson
@@ -13,7 +14,7 @@ import com.mrhiles.aos.activities.StudyRoomDetailActivity
 import com.mrhiles.aos.data.StudyRoom
 import com.mrhiles.aos.databinding.RecyclerAdapterStudyRoomListBinding
 
-class StudyRoomRecyclerAdapter(val context:Context, val documents:List<StudyRoom>) : Adapter<StudyRoomRecyclerAdapter.VH>(){
+class StudyRoomTapListRecyclerAdapter(val context:Context, val documents:List<StudyRoom>) : Adapter<StudyRoomTapListRecyclerAdapter.VH>(){
     inner class VH(val binding:RecyclerAdapterStudyRoomListBinding) : ViewHolder(binding.root)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)=VH(RecyclerAdapterStudyRoomListBinding.inflate(LayoutInflater.from(context),parent,false))
     override fun getItemCount()=documents.size

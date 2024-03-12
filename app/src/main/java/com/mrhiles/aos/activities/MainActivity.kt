@@ -3,7 +3,6 @@ package com.mrhiles.aos.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
-import androidx.annotation.AnyRes
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
 import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
