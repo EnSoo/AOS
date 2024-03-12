@@ -44,20 +44,20 @@ class BottomLoginFragment : BottomSheetDialogFragment() {
         // 이메일 클릭 시
         binding.bnvAppleLogin.setOnClickListener {
             intent.putExtra("login_type","email")
-            dialog.dismiss()
             startActivity(intent)
+            dialog.dismiss()
         }
         // 네이버 클릭 시
         binding.bnvNaverLogin.setOnClickListener {
             intent.putExtra("login_type","naver")
-            dialog.dismiss()
             startActivity(intent)
+            dialog.dismiss()
         }
         // 카카오 클릭 시
         binding.bnvKakaoLogin.setOnClickListener {
             intent.putExtra("login_type","kakao")
-            dialog.dismiss()
             startActivity(intent)
+            dialog.dismiss()
         }
 
     }
@@ -70,8 +70,6 @@ class BottomLoginFragment : BottomSheetDialogFragment() {
         return dialog
 
     }
-
-
 }
 
 //kakaologin 액세스토큰 정보 저장

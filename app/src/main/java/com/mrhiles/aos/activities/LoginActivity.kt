@@ -72,7 +72,6 @@ class LoginActivity : AppCompatActivity() {
                 call.enqueue(object : Callback<String> {
                     override fun onResponse(call: Call<String>, response: Response<String>) {
                         val s= response.body()
-                        AlertDialog.Builder(this@LoginActivity).setMessage("네이버 로그인에 성공 하였습니다.").create().show()
                         val naverLoginInfo=Gson().fromJson(s,NaverLogin::class.java)
                         naverLoginInfo.response.apply { G.userInfo= UserInfo(id,email,"naver") }
                         G.isLogin=true
