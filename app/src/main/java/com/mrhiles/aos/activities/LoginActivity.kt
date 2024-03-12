@@ -73,9 +73,11 @@ class LoginActivity : AppCompatActivity() {
                         val s= response.body()
                         AlertDialog.Builder(this@LoginActivity).setMessage("네이버 로그인에 성공 하였습니다.").create().show()
                         val naverLoginInfo=Gson().fromJson(s,NaverLogin::class.java)
-                        G.userInfo?.id=naverLoginInfo.response.id
-                        G.userInfo?.email=naverLoginInfo.response.email
-                        Toast.makeText(this@LoginActivity, "${s}", Toast.LENGTH_SHORT).show()
+                        G.userInfo?.also {
+                            it.id=naverLoginInfo.response.id // null이 안뜸
+                            it.email=naverLoginInfo.response.email // null이 안뜸
+                        }
+                        Log.d("data","${G.userInfo?.id} ${G.userInfo?.email}") // null이 뜸
                         G.isLogin=true
                         finish()
                     }
