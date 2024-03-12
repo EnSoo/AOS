@@ -3,6 +3,7 @@ package com.mrhiles.aos.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
@@ -22,6 +23,7 @@ class StudyRoomRecyclerAdapter(val context:Context, val documents:List<StudyRoom
         holder.binding.tvCategory.text=studyRoom.category_name
         holder.binding.phoneNumber.text="+82 ${studyRoom.phone}"
 
+        holder.binding.homeItem.setOnClickListener{}
     }
 
 }
