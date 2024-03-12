@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.mrhiles.aos.activities.MainActivity
-import com.mrhiles.aos.adapter.StudyRoomTapFavorRecyclerAdapter
+import com.mrhiles.aos.adapter.StudyRoomTapHomeFavorRecyclerAdapter
 import com.mrhiles.aos.databinding.FragmentBottomHomeBinding
 import com.mrhiles.aos.databinding.FragmentTapHomeFavorBinding
 
@@ -28,6 +28,6 @@ class TapHomeFavorFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
         val ma:MainActivity = activity as MainActivity
         ma.searchStudyRoomResponse ?: return // null일 경우 서버로딩이 완료되지 않았을 수도 있어서 리턴
-        binding.homeRecycler.adapter = StudyRoomTapFavorRecyclerAdapter(requireContext(), ma.searchStudyRoomResponse!!.documents)
+        binding.homeRecycler.adapter = StudyRoomTapHomeFavorRecyclerAdapter(requireContext(), ma.searchStudyRoomResponse!!.documents)
     }
 }

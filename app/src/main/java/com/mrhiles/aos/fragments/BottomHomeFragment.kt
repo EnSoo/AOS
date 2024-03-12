@@ -5,11 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.mrhiles.aos.activities.MainActivity
-import com.mrhiles.aos.adapter.StudyRoomTapListRecyclerAdapter
-import com.mrhiles.aos.adapter.StudyRoomTapViewPagerAdapter
+import com.mrhiles.aos.adapter.TapHomeViewPagerAdapter
 import com.mrhiles.aos.databinding.FragmentBottomHomeBinding
 
 class BottomHomeFragment : Fragment(){
@@ -28,7 +26,7 @@ class BottomHomeFragment : Fragment(){
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.pager.adapter=StudyRoomTapViewPagerAdapter(requireActivity())
+        binding.pager.adapter=TapHomeViewPagerAdapter(requireActivity())
         TabLayoutMediator(binding.tabLayout,binding.pager, TabLayoutMediator.TabConfigurationStrategy{tab, position ->
             tab.setText(tabtitle[position])
         }).attach()
