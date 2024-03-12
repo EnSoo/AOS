@@ -3,6 +3,7 @@ package com.mrhiles.aos.activities
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.annotation.AnyRes
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
 import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
@@ -24,6 +25,8 @@ import retrofit2.Response
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
     var searchStudyRoomResponse:KakaoSearchStudyRoomRespnose?=null
+    // study Room Search Index
+    var pgIndex:Int=1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -54,19 +57,21 @@ class MainActivity : AppCompatActivity() {
             if(!G.isLogin) BottomLoginFragment().show(supportFragmentManager,"bnv_fabRefresh")
             else supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomChatFragment()).commit()
         }
-        SearchStudyRoom()
+
+        // 초기 Study Room 불러오기
+        SearchStudyRoom("스터디룸|스터디카페",1000,pgIndex,"accuracy")
     }
 
     //Retrofit Call 생성 메소드
-    fun getRetrofitCall(longitute:String="", latitude:String="", radius:Int=1000, page:Int=1, sort:String="accuracy") : Call<KakaoSearchStudyRoomRespnose> {
+    fun getRetrofitCall(query:String="",longitute:String="", latitude:String="", radius:Int, page:Int, sort:String) : Call<KakaoSearchStudyRoomRespnose> {
         val retrofit= RetrofitHelper.getRetrofitInstance("https://dapi.kakao.com")
         val retrofitService=retrofit.create(RetrofitService::class.java)
-        return retrofitService.searchStudyRoomToString(longitute="", latitude="", radius=1000, page=1, sort="accuracy")
+        return retrofitService.searchStudyRoomToString(longitute=longitute, latitude=latitude, radius=radius, page=page, sort=sort, query = query)
     }
 
     //Study Room Search 메소드
-    fun SearchStudyRoom() {
-        val call=getRetrofitCall()
+    var SearchStudyRoom=fun(query:String, radius:Int, page:Int, sort:String) {
+        val call=getRetrofitCall(query = query, radius = radius, page = page, sort = sort)
         call.enqueue(object : Callback<KakaoSearchStudyRoomRespnose> {
             override fun onResponse(
                 call: Call<KakaoSearchStudyRoomRespnose>,
