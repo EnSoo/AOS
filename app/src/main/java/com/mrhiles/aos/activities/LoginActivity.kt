@@ -13,6 +13,7 @@ import com.google.gson.Gson
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
 import com.mrhiles.aos.data.NaverLogin
+import com.mrhiles.aos.data.UserInfo
 import com.mrhiles.aos.databinding.ActivityLoginBinding
 import com.mrhiles.aos.network.RetrofitHelper
 import com.mrhiles.aos.network.RetrofitService
@@ -73,11 +74,7 @@ class LoginActivity : AppCompatActivity() {
                         val s= response.body()
                         AlertDialog.Builder(this@LoginActivity).setMessage("네이버 로그인에 성공 하였습니다.").create().show()
                         val naverLoginInfo=Gson().fromJson(s,NaverLogin::class.java)
-                        G.userInfo?.also {
-                            it.id=naverLoginInfo.response.id // null이 안뜸
-                            it.email=naverLoginInfo.response.email // null이 안뜸
-                        }
-                        Log.d("data","${G.userInfo?.id} ${G.userInfo?.email}") // null이 뜸
+                        naverLoginInfo.response.apply { G.userInfo= UserInfo(id,email,"naver") }
                         G.isLogin=true
                         finish()
                     }
