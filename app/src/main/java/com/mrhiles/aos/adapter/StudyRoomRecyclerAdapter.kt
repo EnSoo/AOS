@@ -1,12 +1,13 @@
 package com.mrhiles.aos.adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView.Adapter
-import androidx.recyclerview.widget.RecyclerView.Recycler
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
+import com.google.gson.Gson
+import com.mrhiles.aos.activities.StudyRoomDetailActivity
 import com.mrhiles.aos.data.StudyRoom
 import com.mrhiles.aos.databinding.RecyclerAdapterStudyRoomListBinding
 
@@ -18,12 +19,21 @@ class StudyRoomRecyclerAdapter(val context:Context, val documents:List<StudyRoom
     override fun onBindViewHolder(holder: VH, position: Int) {
         val studyRoom=documents[position]
         if(studyRoom.distance=="") holder.binding.tvDistance.text=""
-        else holder.binding.tvDistance.text=studyRoom.distance
+        else holder.binding.tvDistance.text="${studyRoom.distance}m"
         holder.binding.placeName.text=studyRoom.place_name
         holder.binding.tvCategory.text=studyRoom.category_name
         holder.binding.phoneNumber.text="+82 ${studyRoom.phone}"
 
-        holder.binding.homeItem.setOnClickListener{}
+        holder.binding.homeItem.setOnClickListener{
+            val intent = Intent(context,StudyRoomDetailActivity::class.java)
+
+            //StudyRoom에 대한 데이터를 추가로 보내기
+            val gson= Gson()
+            val s=gson.toJson(studyRoom)
+            intent.putExtra("studyRoom",s)
+
+            context.startActivity(intent)
+        }
     }
 
 }
