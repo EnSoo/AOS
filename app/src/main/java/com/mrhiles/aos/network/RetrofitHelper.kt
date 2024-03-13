@@ -37,11 +37,9 @@ class RetrofitHelper {
                 override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {
 
                 }
-
                 override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {
 
                 }
-
                 override fun getAcceptedIssuers(): Array<X509Certificate> {
                     return arrayOf()
                 }

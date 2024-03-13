@@ -3,6 +3,7 @@ package com.mrhiles.aos.fragments
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mrhiles.aos.activities.LoginActivity
 import com.mrhiles.aos.activities.MainActivity
 import com.mrhiles.aos.activities.StudyRoomDetailActivity
+import com.mrhiles.aos.data.NaverAuthorize
 import com.mrhiles.aos.databinding.FragmentBottomHomeBinding
 import com.mrhiles.aos.databinding.FragmentBottomLoginBinding
 import com.mrhiles.aos.network.RetrofitHelper
@@ -26,6 +28,7 @@ import com.navercorp.nid.oauth.OAuthLoginCallback
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.security.SecureRandom
 
 class BottomLoginFragment : BottomSheetDialogFragment() {
     private val binding by lazy { FragmentBottomLoginBinding.inflate(layoutInflater) }
@@ -70,25 +73,5 @@ class BottomLoginFragment : BottomSheetDialogFragment() {
         return dialog
 
     }
-}
 
-//kakaologin 액세스토큰 정보 저장
-//val callback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
-//    if (error != null) {
-//        // 로그인 실패
-//        Toast.makeText(this, "카카오 로그인 실패", Toast.LENGTH_SHORT).show()
-//    } else {
-//        // 로그인 성공
-//        Toast.makeText(this, "카카오 로그인 성공", Toast.LENGTH_SHORT).show()
-//
-//        // 액세스 토큰 발급
-//        val accessToken = token?.accessToken
-//
-//        // 서버에 액세스 토큰 전송
-//        // ... (서버 API 호출 코드) ...
-//    }
-//}
-//val sharedPreferences = getSharedPreferences("kakao_login", Context.MODE_PRIVATE)
-//val editor = sharedPreferences.edit()
-//editor.putString("access_token", token?.accessToken)
-//editor.apply()
+}

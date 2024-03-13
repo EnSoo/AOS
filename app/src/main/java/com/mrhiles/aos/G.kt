@@ -7,5 +7,6 @@ class G {
         var isLogin: Boolean= false // 로그인 여부
         var userInfo:UserInfo?=null
         var accessToken:String=""
+        var refreshToken:String=""
     }
 }
