@@ -3,6 +3,6 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="apple">#FF000000</color>
-    <color name="naver">#00BF18</color>
+    <color name="naver">#FF03C75A</color>
     <color name="kakao">#F9E000</color>
 </resources>
