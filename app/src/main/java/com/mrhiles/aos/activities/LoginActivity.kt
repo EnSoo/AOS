@@ -26,7 +26,7 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     private val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
-    private val callbackUrl by lazy { "https://ec2-34-238-84-139.compute-1.amazonaws.com" }
+    private val redirectUri by lazy { "https://ec2-34-238-84-139.compute-1.amazonaws.com" }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -70,9 +70,9 @@ class LoginActivity : AppCompatActivity() {
                     2. PHP 서버에서 액세스 토큰을 받아 세션으로 처리
                 */
                 //Retrofit 작업을 통해 사용자 정보 가져오기
-                val retrofit= RetrofitHelper.getunsafeRetrofitInstance(callbackUrl)
+                val retrofit= RetrofitHelper.getunsafeRetrofitInstance(redirectUri)
                 val retrofitApiService=retrofit.create(RetrofitService::class.java)
-                val call=retrofitApiService.test()
+                val call=retrofitApiService.getNidUserInfo("test")
                 call.enqueue(object : Callback<String> {
                     override fun onResponse(call: Call<String>, response: Response<String>) {
                         val s= response.body()
