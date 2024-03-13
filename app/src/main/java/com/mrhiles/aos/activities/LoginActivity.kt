@@ -1,5 +1,6 @@
 package com.mrhiles.aos.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -61,6 +62,8 @@ class LoginActivity : AppCompatActivity() {
 
                 val accessToken:String? = NaverIdLoginSDK.getAccessToken()
                 G.accessToken=accessToken!!
+                val sharedPreferences = getSharedPreferences("logininfo", Context.MODE_PRIVATE)
+                val editor=sharedPreferences.edit()
                 /* AcessToken 토급 PHP에 보내는 작업
                     1. 네이버 개발자 사이트에서 Callback URL에 세션을 처리할 php 경로 작성
                     2. PHP 서버에서 액세스 토큰을 받아 세션으로 처리
@@ -75,6 +78,9 @@ class LoginActivity : AppCompatActivity() {
                         val naverLoginInfo=Gson().fromJson(s,NaverLogin::class.java)
                         naverLoginInfo.response.apply { G.userInfo= UserInfo(id,email,"naver") }
                         G.isLogin=true
+                        editor.putString("access_token",G.accessToken)
+                        editor.putString("login_type","naver")
+                        editor.apply()
                         finish()
                     }
 
