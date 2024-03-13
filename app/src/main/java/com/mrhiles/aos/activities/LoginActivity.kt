@@ -3,9 +3,11 @@ package com.mrhiles.aos.activities
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
@@ -23,6 +25,7 @@ import com.navercorp.nid.oauth.OAuthLoginCallback
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.security.SecureRandom
 
 class LoginActivity : AppCompatActivity() {
     private val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
@@ -33,20 +36,20 @@ class LoginActivity : AppCompatActivity() {
         val loginType: String? = intent.getStringExtra("login_type")
 
         when(loginType) {
-            "email" -> clickEmail()
-            "naver" -> clickNaver()
-            "kakao" -> clickKakao()
+            "email" -> emailLogin()
+            "naver" -> naverLogin2()
+            "kakao" -> kakaoLogin()
         }
     }
 
     //이메일 로그인
-    private fun clickEmail() {
+    private fun emailLogin() {
 
     }
     //네이버 간편 로그인
-    private fun clickNaver() {
+    private fun naverLogin() {
         // 네아로 SDK 초기화
-        NaverIdLoginSDK.initialize(this, "YQOhvcuPJbnpf4yLQWNh", "ZdeJyRYW2s", "SearchMap")
+        NaverIdLoginSDK.initialize(this, "YQOhvcuPJbnpf4yLQWNh", "ZdeJyRYW2s", "AOS")
 
         // 로그인 요청
         NaverIdLoginSDK.authenticate(this, object : OAuthLoginCallback {
@@ -95,9 +98,39 @@ class LoginActivity : AppCompatActivity() {
 
         })
     }
-
-    //카카오 간편 로그인
-    private fun clickKakao() {
+    private fun naverLogin2() {
+        val clientId= "YQOhvcuPJbnpf4yLQWNh"
+        val redirectUri= "https://ec2-34-238-84-139.compute-1.amazonaws.com/login/login_check.php"
+        val state = generateState()
+        val url="https://nid.naver.com/oauth2.0/authorize?&response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&state=${state}"
+        Log.d("link",url)
+        val intent=Intent(this@LoginActivity,NaverLoginActivity::class.java)
+        intent.putExtra("login_type","naver")
+        intent.putExtra("naverLoginUrl", url)
+        resultLauncher.launch(intent)
+        finish()
 
     }
+    // csrf 방지를 위한 토큰
+    fun generateState(): String {
+        val bytes = ByteArray(16)
+        val secureRandom = SecureRandom()
+        secureRandom.nextBytes(bytes)
+        return Base64.encodeToString(bytes, Base64.DEFAULT).toString()
+    }
+
+    //카카오 간편 로그인
+    private fun kakaoLogin() {
+
+    }
+
+
+    // 간편로그인 웹뷰 띄운 후 결과
+    private val resultLauncher=registerForActivityResult(ActivityResultContracts.StartActivityForResult(),{
+        if(it.resultCode==RESULT_OK) {
+            val data=it.data
+            val code = data?.getStringExtra("code")
+            val state = data?.getStringExtra("state")
+        }
+    })
 }

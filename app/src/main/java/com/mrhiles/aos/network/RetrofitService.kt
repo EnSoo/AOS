@@ -5,6 +5,7 @@ import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
 import com.mrhiles.aos.data.NaverAuthorize
 import retrofit2.Call
 import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Headers
@@ -23,15 +24,16 @@ interface RetrofitService {
     fun getNidUserInfo(@Header("Authorization") authorization:String) : Call<String>
 
     //네이버 로그인 인증 요청
-    @POST("oauth2.0/authorize")
+    @GET("/oauth2.0/authorize")
     fun getNaverLoginauthorize(
-        @Field("response_type") responseType: String, //값 code 고정
-        @Field("client_id") clientId: String,
-        @Field("redirect_uri") redirectUri: String,
-        @Field("state") state: String
-    ) : Call<NaverAuthorize>
+        @Query("response_type") responseType: String, //값 code 고정
+        @Query("client_id") clientId: String,
+        @Query("redirect_uri") redirectUri: String,
+        @Query("state") state: String
+    ) : Call<Unit>
 
     //네이버 로그인 토큰을 발급받기 위해 redirect_uri에 요청
+    @FormUrlEncoded
     @POST("login/naver/getToken.php")
     fun getNaverToken(
         @Field("grant_type") responseType: String, // 발급 : authorization_code
@@ -40,6 +42,7 @@ interface RetrofitService {
     ) : Call<GetToken>
 
     //네이버 로그인 토큰을 갱신
+    @FormUrlEncoded
     @POST("login/naver/RefreshToken.php")
     fun refreshNaverToken(
         @Field("grant_type") responseType: String, // 갱신 : refresh_token
@@ -47,6 +50,7 @@ interface RetrofitService {
     ) : Call<GetToken>
 
     //네이버 로그인 토큰을 삭제
+    @FormUrlEncoded
     @POST("login/naver/deleteToken.php")
     fun deleteNaverToken(
         @Field("grant_type") responseType: String, // 삭제 : delete
