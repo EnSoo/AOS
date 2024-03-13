@@ -17,4 +17,6 @@ interface RetrofitService {
     //네아로 회원정보 프로필 api.. 요청
     @GET("/v1/nid/me")
     fun getNidUserInfo(@Header("Authorization") authorization:String) : Call<String>
+    @GET("login/login.php")
+    fun test() : Call<String>
 }

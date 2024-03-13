@@ -26,6 +26,7 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     private val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
+    private val callbackUrl by lazy { "https://ec2-34-238-84-139.compute-1.amazonaws.com" }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -69,18 +70,19 @@ class LoginActivity : AppCompatActivity() {
                     2. PHP 서버에서 액세스 토큰을 받아 세션으로 처리
                 */
                 //Retrofit 작업을 통해 사용자 정보 가져오기
-                val retrofit= RetrofitHelper.getRetrofitInstance("https://openapi.naver.com")
+                val retrofit= RetrofitHelper.getunsafeRetrofitInstance(callbackUrl)
                 val retrofitApiService=retrofit.create(RetrofitService::class.java)
-                val call=retrofitApiService.getNidUserInfo("Bearer ${accessToken}")
+                val call=retrofitApiService.test()
                 call.enqueue(object : Callback<String> {
                     override fun onResponse(call: Call<String>, response: Response<String>) {
                         val s= response.body()
-                        val naverLoginInfo=Gson().fromJson(s,NaverLogin::class.java)
-                        naverLoginInfo.response.apply { G.userInfo= UserInfo(id,email,"naver") }
-                        G.isLogin=true
-                        editor.putString("access_token",G.accessToken)
-                        editor.putString("login_type","naver")
-                        editor.apply()
+                        Log.d("test","${s}")
+//                        val naverLoginInfo=Gson().fromJson(s,NaverLogin::class.java)
+//                        naverLoginInfo.response.apply { G.userInfo= UserInfo(id,email,"naver") }
+//                        G.isLogin=true
+//                        editor.putString("access_token",G.accessToken)
+//                        editor.putString("login_type","naver")
+//                        editor.apply()
                         finish()
                     }
 
