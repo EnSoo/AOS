@@ -61,10 +61,7 @@ class LoginActivity : AppCompatActivity() {
             override fun onSuccess() {
                 Toast.makeText(this@LoginActivity, "로그인 성공", Toast.LENGTH_SHORT).show()
 
-                val accessToken:String? = NaverIdLoginSDK.getAccessToken()
-                G.accessToken=accessToken!!
-                val sharedPreferences = getSharedPreferences("logininfo", Context.MODE_PRIVATE)
-                val editor=sharedPreferences.edit()
+                val refreshToken:String? = NaverIdLoginSDK.getRefreshToken()
                 /* AcessToken 토급 PHP에 보내는 작업
                     1. 네이버 개발자 사이트에서 Callback URL에 세션을 처리할 php 경로 작성
                     2. PHP 서버에서 액세스 토큰을 받아 세션으로 처리
@@ -72,7 +69,7 @@ class LoginActivity : AppCompatActivity() {
                 //Retrofit 작업을 통해 사용자 정보 가져오기
                 val retrofit= RetrofitHelper.getunsafeRetrofitInstance(redirectUri)
                 val retrofitApiService=retrofit.create(RetrofitService::class.java)
-                val call=retrofitApiService.getNidUserInfo("test")
+                val call=retrofitApiService.getNaverLogin(refreshToken)
                 call.enqueue(object : Callback<String> {
                     override fun onResponse(call: Call<String>, response: Response<String>) {
                         val s= response.body()
@@ -80,6 +77,8 @@ class LoginActivity : AppCompatActivity() {
 //                        val naverLoginInfo=Gson().fromJson(s,NaverLogin::class.java)
 //                        naverLoginInfo.response.apply { G.userInfo= UserInfo(id,email,"naver") }
 //                        G.isLogin=true
+//                        val sharedPreferences = getSharedPreferences("logininfo", Context.MODE_PRIVATE)
+//                        val editor=sharedPreferences.edit()
 //                        editor.putString("access_token",G.accessToken)
 //                        editor.putString("login_type","naver")
 //                        editor.apply()

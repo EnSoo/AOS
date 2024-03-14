@@ -23,13 +23,10 @@ interface RetrofitService {
     fun getNidUserInfo(@Header("Authorization") authorization:String) : Call<String>
 
     //네이버 로그인 인증 요청
-    @POST("oauth2.0/authorize")
-    fun getNaverLoginauthorize(
-        @Field("response_type") responseType: String, //값 code 고정
-        @Field("client_id") clientId: String,
-        @Field("redirect_uri") redirectUri: String,
-        @Field("state") state: String
-    ) : Call<NaverAuthorize>
+    @POST("/auth/naver/token_init.php")
+    fun getNaverLogin(
+        @Field("refresh_token") refreshToken: String?, //값 code 고정
+    ) : Call<String>
 
     //네이버 로그인 토큰을 발급받기 위해 redirect_uri에 요청
     @POST("login/naver/getToken.php")
