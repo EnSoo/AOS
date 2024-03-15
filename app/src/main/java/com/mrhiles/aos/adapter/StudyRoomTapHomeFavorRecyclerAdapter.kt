@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.gson.Gson
 import com.mrhiles.aos.G
+import com.mrhiles.aos.activities.MapActivity
 import com.mrhiles.aos.activities.StudyRoomDetailActivity
 import com.mrhiles.aos.data.StudyRoom
 import com.mrhiles.aos.databinding.RecyclerAdapterStudyRoomListBinding
@@ -42,7 +43,14 @@ class StudyRoomTapHomeFavorRecyclerAdapter(val context:Context, val documents:Li
 
         // 맵 아이콘 클릭시 맵 지도 출력
         holder.binding.map.setOnClickListener{
-            Toast.makeText(context, "${studyRoom.x} ${studyRoom.y}", Toast.LENGTH_SHORT).show()
+            val intent=Intent(context, MapActivity::class.java)
+
+            //StudyRoom에 대한 데이터를 보내기
+            val gson=Gson()
+            val s=gson.toJson(studyRoom)
+            intent.putExtra("studyRoom",s)
+            intent.putExtra("type","Item") // Type이 Item일 경우 1개만 검색
+            context.startActivity(intent)
         }
     }
 
