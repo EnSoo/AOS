@@ -1,6 +1,5 @@
 package com.mrhiles.aos.activities
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
@@ -10,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.mrhiles.aos.R
 import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
-import com.mrhiles.aos.data.Meta
 import com.mrhiles.aos.data.StudyRoom
 import com.mrhiles.aos.databinding.ActivityMapBinding
 import com.mrhiles.aos.network.RetrofitHelper
@@ -27,14 +25,26 @@ import com.naver.maps.map.overlay.Overlay
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import kotlin.concurrent.thread
 
 class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private val binding by lazy { ActivityMapBinding.inflate(layoutInflater) }
     private lateinit var naverMap : NaverMap
+    var searchStudyRoomResponse:KakaoSearchStudyRoomRespnose?=null
+
+    //마커 리스트
+    val markerList:MutableList<Marker> by lazy { mutableListOf() }
+
+    //스터디 룸 리스트
+    val studyRooms:MutableList<StudyRoom> by lazy { mutableListOf() }
+
+    //검색 종류 : 지역, 범위, 검색키워드
     private var location=""
     private var distance=""
     private var searchQuery=""
+
+    // 현재 지도에서 검색 클릭 여부
+    private var isCurrentSearch=false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -42,7 +52,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         // 입력창이 제일 상단에 위치하도록..
         binding.relativeLayout.bringToFront()
 
+        // 입력창의 dropDown 설정
         dropDownSetting()
+
+        // 현 지도에서 검색
+        binding.currentLocationSearch.apply {
+            // 제일 상단에 위치하도록
+            bringToFront()
+
+            // 클릭 시 현재 지도 시점의 위치 구하기
+            setOnClickListener { getStudyRooms(true) }
+        }
 
         val fm = supportFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
@@ -54,13 +74,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         mapFragment.getMapAsync(this)
     }
 
-    @SuppressLint("ResourceAsColor")
     override fun onMapReady(naverMap: NaverMap) {
         // naverMap.cameraPosition.target.also{it.y, it.x} 현재 카메라 위치 구하는 방법
         this.naverMap=naverMap
         val type=intent.getStringExtra("type")
         val s:String?=intent.getStringExtra("studyRoom")
-        val studyRooms:MutableList<StudyRoom> = mutableListOf()
 
 
         if(type=="Item") { // 1개의 아이템일 경우
@@ -72,7 +90,10 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
               studyRooms.add(it)
             }
         }
-        setMarkerCameraMove(LatLng(studyRooms.get(0).y.toDouble(),studyRooms.get(0).x.toDouble()),studyRooms)
+
+        // 초기 맵 지도에서 마커 설정 및 카메라 이동
+        setMarker()
+        studyRooms.get(0).apply { setCameraMove(LatLng(y.toDouble(),x.toDouble())) }
     }
 
     private fun dropDownSetting() {
@@ -98,58 +119,61 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         // 지역 드롭다운에서 아이템 클릭 시
         binding.dropdownMenu.setOnItemClickListener { parent, view, position, id ->
             location=(view as TextView).text.toString()
-            thread {
-                val lock = Any()
-                synchronized(lock) {
-                    val studyRooms=getStudyRooms()
-                    if(studyRooms.size != 0) { studyRooms.get(0).also { setMarkerCameraMove(LatLng(it.y.toDouble(), it.x.toDouble()), studyRooms) } }
-                }
-            }
-
+            getStudyRooms()
         }
         // 범위 드롭다운에서 아이템 클릭 시
         binding.dropdownMenu2.setOnItemClickListener { parent, view, position, id ->
             distance=(view as TextView).text.toString()
-            thread {
-                val lock = Any()
-                synchronized(lock) {
-                    val studyRooms=getStudyRooms()
-                    if(studyRooms.size != 0) { studyRooms.get(0).also { setMarkerCameraMove(LatLng(it.y.toDouble(), it.x.toDouble()), studyRooms) } }
-                }
-            }
+            getStudyRooms()
         }
         binding.inputEditer.setOnEditorActionListener { v, actionId, event ->
             searchQuery=binding.inputEditer.text.toString()
-            thread {
-                val lock = Any()
-                synchronized(lock) {
-                    val studyRooms=getStudyRooms()
-                    if(studyRooms.size != 0) { studyRooms.get(0).also { setMarkerCameraMove(LatLng(it.y.toDouble(), it.x.toDouble()), studyRooms) } }
-                }
-            }
-
+            getStudyRooms()
             false
         }
     }
     //검색 결과에 따라 studyroom list 출력
-    private fun getStudyRooms() :List<StudyRoom> {
-        val studyRooms:MutableList<StudyRoom> = mutableListOf()
+    private fun getStudyRooms(isCurrentSearch:Boolean=false) {
+        // 마커 및 studyRoom 초기화
+        clearMarkerStudyRoomList()
+
         val retrofit= RetrofitHelper.getRetrofitInstance("https://dapi.kakao.com")
         val retrofitService=retrofit.create(RetrofitService::class.java)
         var call:Call<KakaoSearchStudyRoomRespnose>
-        var documents:List<StudyRoom> = mutableListOf()
         if(distance=="") distance="1000" //기본값 1000
-        Log.d("tset","${location} ${searchQuery} 스터디룸|스터디카페")
-        call=retrofitService.searchStudyRoomToString(radius=distance.toInt(), query = "${location} ${searchQuery} 스터디룸|스터디카페")
+        // 현재 지도에서 검색 클릭이 아닐 경우
+        if(!isCurrentSearch) call=retrofitService.searchStudyRoomToString(radius=distance.toInt(), query = "${location} ${searchQuery} 스터디룸|스터디카페")
+        else naverMap.cameraPosition.target.also {
+            call=retrofitService.searchStudyRoomToString(latitude = it.latitude.toString(), longitute = it.longitude.toString(), radius=distance.toInt(), query = "${location} ${searchQuery} 스터디룸|스터디카페")
+        }
         call.enqueue(object : Callback<KakaoSearchStudyRoomRespnose>{
             override fun onResponse(
                 call: Call<KakaoSearchStudyRoomRespnose>,
                 response: Response<KakaoSearchStudyRoomRespnose>
             ) {
-                val searchStudyRoomResponse=response.body()
+                if (response.isSuccessful){ //응답결과가 성공적으로 나왔을 경우
 
-                searchStudyRoomResponse ?: return
-                documents= searchStudyRoomResponse!!.documents
+                    searchStudyRoomResponse=response.body()
+                    if(searchStudyRoomResponse!!.documents.size >0) { // 결과가 1개 이상일 경우
+                        // Marker 및 StudyRoomList 초기화
+                        searchStudyRoomResponse!!.documents.also { studyList->
+                            studyList.forEach{ studyRooms.add(it) }
+                            // 현재 지도에서 검색 클릭이 아닐 경우
+                            if(!isCurrentSearch) setCameraMove(LatLng(studyRooms.get(0).y.toDouble(),studyRooms.get(0).x.toDouble()),naverMap.cameraPosition.zoom)
+                            else naverMap.cameraPosition.also { // 현재 지도에서 검색 클릭 시
+                                val latLng = LatLng(it.target.latitude, it.target.longitude)
+                                setCameraMove(latLng, it.zoom)
+                            }
+                            setMarker()
+                            var i=0
+                            markerList.forEach{
+                                Log.d("마커 ${++i}","${it.position.latitude} ${it.position.longitude}")
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this@MapActivity, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
 
             override fun onFailure(call: Call<KakaoSearchStudyRoomRespnose>, t: Throwable) {
@@ -157,23 +181,17 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
         })
-
-
-        return documents
     }
 
-    // studyroom에 따라 마커 표시 및 카메라 이동
-    @SuppressLint("ResourceAsColor")
-    private fun setMarkerCameraMove(latLng:LatLng, studyRooms: List<StudyRoom>){
-        // 카메라 이동
-        val cameraUpdate = CameraUpdate.scrollAndZoomTo(latLng,15.0)
-
-        //내 위치로 카메라 이동
-        this.naverMap.moveCamera(cameraUpdate)
+    // studyroom에 따라 마커 표시
+    private fun setMarker(){
+        Toast.makeText(this, "${studyRooms.size}개가 검색 되었습니다.", Toast.LENGTH_SHORT).show()
 
         // 마커 및 정보창 처리
         studyRooms.forEach{studyRoom ->
 
+            //위치 지정
+            var latLng=LatLng(studyRoom.y.toDouble(),studyRoom.x.toDouble())
             // 마커 작업
             val maker=Marker()                    // 마커 객체 생성
             maker.apply {
@@ -192,9 +210,6 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
 
-            //지도를 클릭 하면 열려 있는 정보 창이 닫힘
-            naverMap.setOnMapClickListener { pointF, latLng -> infoWindow.close() }
-
             // 마커 클릭 시
             val listener = Overlay.OnClickListener { overlay ->
                 val marker=overlay as Marker
@@ -209,7 +224,25 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             }
 
             maker.onClickListener=listener
-        }
 
+            //마커 리스트 보관
+            markerList.add(maker)
+        }
+    }
+
+    private fun setCameraMove(latLng:LatLng,zoom:Double=15.0) {
+        // 카메라 이동
+        val cameraUpdate = CameraUpdate.scrollAndZoomTo(latLng,zoom)
+        //내 위치로 카메라 이동
+        this.naverMap.moveCamera(cameraUpdate)
+    }
+
+    private fun clearMarkerStudyRoomList() {
+        // 스터디룸 목록 삭제
+        studyRooms.clear()
+
+        // 지도상에 나와 있는 마커 삭제
+        markerList.forEach{ it.map=null }
+        markerList.clear()
     }
 }

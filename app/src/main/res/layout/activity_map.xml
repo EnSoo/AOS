@@ -61,6 +61,30 @@
                 android:textSize="12sp" />
         </com.google.android.material.textfield.TextInputLayout>
     </RelativeLayout>
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/current_location_search"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        android:layout_gravity="center_horizontal"
+        app:cardBackgroundColor="@color/white">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="8dp">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="8dp"
+                android:src="@drawable/ic_refresh"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="현 지도에서 검색"
+                android:textColor="#4646C8" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:layout_width="match_parent"
