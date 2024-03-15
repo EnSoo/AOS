@@ -1,14 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".activities.MapActivity">
+    <RelativeLayout
+        android:id="@+id/relative_layout"
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:layout_margin="8dp"
+        android:gravity="center_vertical">
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dropdown_location"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center_vertical"
+            android:background="@color/white">
+            <AutoCompleteTextView
+                android:id="@+id/dropdown_menu"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:inputType="none"
+                android:text="지역"
+                android:textSize="12sp"
+                android:backgroundTint="@color/white"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dropdown_distance"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense.ExposedDropdownMenu"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@+id/dropdown_location"
+            android:gravity="center_vertical"
+            android:background="@color/white">
+            <AutoCompleteTextView
+                android:id="@+id/dropdown_menu2"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:inputType="none"
+                android:text="범위"
+                android:textSize="12sp"
+                android:backgroundTint="@color/white"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/dropdown_distance"
+            android:gravity="center_vertical"
+            android:hint="검색어를 입력하세요"
+            android:background="@color/white">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="text"
+                android:textSize="12sp" />
+        </com.google.android.material.textfield.TextInputLayout>
+    </RelativeLayout>
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:name="com.naver.maps.map.MapFragment" />
-</LinearLayout>
+</FrameLayout>

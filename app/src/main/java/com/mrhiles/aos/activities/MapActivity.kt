@@ -3,6 +3,7 @@ package com.mrhiles.aos.activities
 import android.annotation.SuppressLint
 import android.graphics.PointF
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.mrhiles.aos.R
@@ -25,6 +26,29 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
+        // 입력창이 제일 상단에 위치하도록..
+        binding.relativeLayout.bringToFront()
+
+        // 드롭다운 지역 아이템 설정
+        val regionArray= resources.getStringArray(R.array.lecture_location_list)
+        val arrayAdapter=ArrayAdapter<String>(this,R.layout.lecture_dropdown_item, regionArray)
+        binding.dropdownMenu.setAdapter(arrayAdapter)
+
+        // 드롭다운 범위 아이템 설정
+        val distanceList= mutableListOf<String>()
+        distanceList.add("")
+        for(i in 10 until 300 step 10) {
+            distanceList.add(i.toString())
+        }
+        for(i in 300 until 2000 step 100) {
+            distanceList.add(i.toString())
+        }
+        for(i in 2000..20000 step 1000) {
+            distanceList.add(i.toString())
+        }
+        val distanceAdapter=ArrayAdapter<String>(this,R.layout.lecture_dropdown_item,distanceList)
+        binding.dropdownMenu2.setAdapter(distanceAdapter)
 
         val fm = supportFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?

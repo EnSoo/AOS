@@ -2,7 +2,7 @@
     <string name="app_name">AOS</string>
     <string name="bnv_tour"><u>구경 먼저 할게요</u></string>
     <string-array name="lecture_location_list">
-        <item>없음</item>
+        <item></item>
         <item>서울</item>
         <item>경기</item>
         <item>인천</item>
