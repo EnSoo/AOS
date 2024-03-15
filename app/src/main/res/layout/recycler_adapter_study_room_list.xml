@@ -67,6 +67,14 @@
                 android:textColor="@color/black"
                 android:autoLink="phone"/>
             <ImageView
+                android:id="@+id/map"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginLeft="8dp"
+                android:src="@drawable/ic_map"
+                android:layout_alignParentBottom="true"
+                android:layout_toRightOf="@+id/phone_number"/>
+            <ImageView
                 android:id="@+id/favor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
