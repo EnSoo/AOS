@@ -1,5 +1,6 @@
 package com.mrhiles.aos.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.ArrayAdapter
@@ -208,6 +209,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 override fun getText(p0: InfoWindow): CharSequence {
                     return "${studyRoom.place_name}\n\n${studyRoom.address_name}\n\n${studyRoom.phone}"
                 }
+            }
+            // 정보창 클릭 시
+            infoWindow.setOnClickListener {
+                val intent = Intent(this,StudyRoomDetailActivity::class.java)
+
+                //StudyRoom에 대한 데이터를 추가로 보내기
+                val gson= Gson()
+                val s=gson.toJson(studyRoom)
+                intent.putExtra("studyRoom",s)
+
+                this.startActivity(intent)
+                true
             }
 
             // 마커 클릭 시
