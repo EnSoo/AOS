@@ -22,6 +22,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
+
         val fm = supportFragmentManager
         val mapFragment = fm.findFragmentById(binding.map.id) as MapFragment?
             ?: MapFragment.newInstance().also {
@@ -33,16 +34,25 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(naverMap: NaverMap) {
         val type=intent.getStringExtra("type")
-        Toast.makeText(this, "test", Toast.LENGTH_SHORT).show()
+
         if(type=="Item") {
-            val s:String?=intent.getStringExtra("studyRoom")
-            s.also { studyRoom= Gson().fromJson(it, StudyRoom::class.java) }
-            val latLng= LatLng(studyRoom.x.toDouble(),studyRoom.y.toDouble())
+//            val s:String?=intent.getStringExtra("studyRoom")
+//            s.also { studyRoom= Gson().fromJson(it, StudyRoom::class.java) }
+//            val latLng= LatLng(studyRoom.x.toDouble(),studyRoom.y.toDouble())
+//
+//            //내 위치로 카메라 이동
+//            val cameraUpdate=CameraUpdate.scrollTo(latLng)
+//            naverMap.moveCamera(cameraUpdate)
+            val cameraUpdate = CameraUpdate.scrollTo(LatLng(37.5666102, 126.9783881))
+                .animate(CameraAnimation.Easing, 2000)
+                .finishCallback {
+                    Toast.makeText(this, "카메라 이동 완료", Toast.LENGTH_SHORT).show()
+                }
+                .cancelCallback {
+                    Toast.makeText(this, "카메라 이동 취소", Toast.LENGTH_SHORT).show()
+                }
 
-            //내 위치로 카메라 이동
-            val cameraUpdate=CameraUpdate.scrollTo(latLng)
             naverMap.moveCamera(cameraUpdate)
-
             //라벨레이어에 라벨 추가
 
         }
