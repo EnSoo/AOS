@@ -54,7 +54,7 @@
             android:hint="검색어를 입력하세요"
             android:background="@color/white">
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/tv"
+                android:id="@+id/input_editer"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:inputType="text"
