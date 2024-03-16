@@ -1,12 +1,25 @@
 package com.mrhiles.aos.activities
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
 import com.google.gson.Gson
 import com.mrhiles.aos.R
 import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
@@ -46,12 +59,39 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     // 현재 지도에서 검색 클릭 여부
     private var isCurrentSearch=false
 
+    // 1. search : 일반 검색,
+    // 2. currentSearch : 현재 보이는 지도에서 검색
+    // 3. myLocationSearch : 내 위치에서 검색
+    private var searchType="search"
+
+    // 현재 내 위치 정보 객체(위도, 경도)
+    private var myLocation:Location?=null
+
+    // [ Google Fused Location API 사용 : play-services-location ]
+    val locationProviderClient : FusedLocationProviderClient by lazy { LocationServices.getFusedLocationProviderClient(this)}
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
         // 입력창이 제일 상단에 위치하도록..
         binding.relativeLayout.bringToFront()
+
+        // 현재 내 위치 찾기 이미지가 제일 상단에 위치하도록
+        binding.myLocation.bringToFront()
+
+        // 현재 내 위치로 카메라 이동 및 주변 검색
+        binding.myLocation.setOnClickListener {
+            // 위치정보 제공에 대한 퍼미션 체크
+            val permissionState:Int=checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION)
+            if(permissionState==PackageManager.PERMISSION_DENIED) {
+                //퍼미션 요청 다이얼로그 보이고 그 결과를 받아오는 작업을 대신해주는 대행사 이용
+                permissionResultLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+            } else {
+                //위치정보수집이 허가되어 있다면.. 곧바로 위치정보 얻어오는 작업 시작
+                requestMyLocation()
+            }
+        }
 
         // 입력창의 dropDown 설정
         dropDownSetting()
@@ -62,7 +102,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             bringToFront()
 
             // 클릭 시 현재 지도 시점의 위치 구하기
-            setOnClickListener { getStudyRooms(true) }
+            setOnClickListener { getStudyRooms("currentSearch") }
         }
 
         val fm = supportFragmentManager
@@ -129,12 +169,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         binding.inputEditer.setOnEditorActionListener { v, actionId, event ->
             searchQuery=binding.inputEditer.text.toString()
+            binding.inputEditer.setText("")
             getStudyRooms()
             false
         }
     }
     //검색 결과에 따라 studyroom list 출력
-    private fun getStudyRooms(isCurrentSearch:Boolean=false) {
+    private fun getStudyRooms(type:String="search") {
         // 마커 및 studyRoom 초기화
         clearMarkerStudyRoomList()
 
@@ -143,9 +184,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         var call:Call<KakaoSearchStudyRoomRespnose>
         if(distance=="") distance="1000" //기본값 1000
         // 현재 지도에서 검색 클릭이 아닐 경우
-        if(!isCurrentSearch) call=retrofitService.searchStudyRoomToString(radius=distance.toInt(), query = "${location} ${searchQuery} 스터디룸|스터디카페")
-        else naverMap.cameraPosition.target.also {
-            call=retrofitService.searchStudyRoomToString(latitude = it.latitude.toString(), longitute = it.longitude.toString(), radius=distance.toInt(), query = "${location} ${searchQuery} 스터디룸|스터디카페")
+        if(type=="search") call=retrofitService.searchStudyRoomToString(radius=distance.toInt(), query = "${location} ${searchQuery} 스터디룸|스터디카페")
+        else if(type=="currentSearch"){ // 현재 보이는 지도에서 검색일 경우
+            naverMap.cameraPosition.target.also {
+                call=retrofitService.searchStudyRoomToString(latitude = it.latitude.toString(), longitute = it.longitude.toString(), radius=distance.toInt(), query = "${location} ${searchQuery} 스터디룸|스터디카페")
+            }
+        } else {    // 내 위치에서 검색 할 경우 myLocationSearch
+            call=retrofitService.searchStudyRoomToString(latitude = myLocation?.latitude.toString(), longitute = myLocation?.longitude.toString(), radius=distance.toInt(), query = "${location} ${searchQuery} 스터디룸|스터디카페")
         }
         call.enqueue(object : Callback<KakaoSearchStudyRoomRespnose>{
             override fun onResponse(
@@ -160,19 +205,23 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                         searchStudyRoomResponse!!.documents.also { studyList->
                             studyList.forEach{ studyRooms.add(it) }
                             // 현재 지도에서 검색 클릭이 아닐 경우
-                            if(!isCurrentSearch) setCameraMove(LatLng(studyRooms.get(0).y.toDouble(),studyRooms.get(0).x.toDouble()),naverMap.cameraPosition.zoom)
-                            else naverMap.cameraPosition.also { // 현재 지도에서 검색 클릭 시
-                                val latLng = LatLng(it.target.latitude, it.target.longitude)
-                                setCameraMove(latLng, it.zoom)
+                            if(type=="search") setCameraMove(LatLng(studyRooms.get(0).y.toDouble(),studyRooms.get(0).x.toDouble()),naverMap.cameraPosition.zoom)
+                            else if(type=="currentSearch") { // 현재 보이는 지도에서 검색일 경우
+                                naverMap.cameraPosition.also { // 현재 지도에서 검색 클릭 시
+                                    val latLng = LatLng(it.target.latitude, it.target.longitude)
+                                    setCameraMove(latLng, it.zoom)
+                                }
+                            } else {
+                                // 내 위치에서 검색 할 경우 myLocationSearch
+                                setCameraMove(LatLng(myLocation!!.latitude,myLocation!!.longitude))
                             }
                             setMarker()
-                            var i=0
-                            markerList.forEach{
-                                Log.d("마커 ${++i}","${it.position.latitude} ${it.position.longitude}")
-                            }
                         }
                     } else {
                         Toast.makeText(this@MapActivity, "검색 결과가 없습니다.", Toast.LENGTH_SHORT).show()
+
+                        //내 위치에서 검색 시 카메라 이동
+                        if(type=="myLocationSearch") setCameraMove(LatLng(myLocation!!.latitude,myLocation!!.longitude))
                     }
                 }
             }
@@ -243,6 +292,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
+    // 지정된 위치로 카메라 이동
     private fun setCameraMove(latLng:LatLng,zoom:Double=15.0) {
         // 카메라 이동
         val cameraUpdate = CameraUpdate.scrollAndZoomTo(latLng,zoom)
@@ -250,6 +300,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         this.naverMap.moveCamera(cameraUpdate)
     }
 
+    // StudyRoom 및 Marker clear
     private fun clearMarkerStudyRoomList() {
         // 스터디룸 목록 삭제
         studyRooms.clear()
@@ -257,5 +308,38 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         // 지도상에 나와 있는 마커 삭제
         markerList.forEach{ it.map=null }
         markerList.clear()
+    }
+
+    // 퍼미션 요청 및 결과를 받아오는 작업을 대신하는 대행사 등록
+    val permissionResultLauncher:ActivityResultLauncher<String> = registerForActivityResult(ActivityResultContracts.RequestPermission()){
+        if(it) requestMyLocation()
+        else Toast.makeText(this, "내 위치정보를 제공하지 않아서 검색기능 사용이 제한됩니다.", Toast.LENGTH_SHORT).show()
+    }
+
+    //현재 위치를 얻어오는 작업요청 코드가 있는 메소드
+    private fun requestMyLocation() {
+        //요청 객체 생성
+        val request: LocationRequest=LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY,3000).build()
+        //실시간 위치정보 갱신 요청
+        if (ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)
+            != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        { return }
+        locationProviderClient.requestLocationUpdates(request,locationCallback, Looper.getMainLooper())
+
+    }
+
+    //위치정보 갱신 떄마다 발동하는 콜백 객체
+    private val locationCallback=object : LocationCallback() {
+        override fun onLocationResult(p0: LocationResult) {
+            super.onLocationResult(p0)
+
+            myLocation=p0.lastLocation
+
+            //위치 탐색이 종료되었으니 내 위치 정보 업데이트를 이제 그만
+            locationProviderClient.removeLocationUpdates(this) // this는 location callback 객체
+
+            // 내 위치를 기준으로 장소 검색
+            getStudyRooms("myLocationSearch")
+        }
     }
 }
