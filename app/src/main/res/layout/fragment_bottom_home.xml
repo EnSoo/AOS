@@ -17,20 +17,34 @@
                 android:layout_height="320dp"
                 android:src="@drawable/bnv_search"
                 android:scaleType="centerCrop"/>
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/input_layout"
+            <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_below="@id/iv"
-                android:hint="검색어를 입력하세요">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/input_editer"
+                android:layout_below="@id/iv">
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/input_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="text"/>
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:layout_marginRight="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:hint="검색어를 입력하세요">
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/input_editer"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:inputType="text"/>
+                </com.google.android.material.textfield.TextInputLayout>
+                <ImageView
+                    android:id="@+id/location_search"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_alignRight="@id/input_layout"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="8dp"
+                    android:src="@drawable/baseline_location_searching_24"
+                    android:background="@color/chat_room_select_color"/>
+            </RelativeLayout>
+
             <com.google.android.material.tabs.TabLayout
                 android:id="@+id/tab_Layout"
                 android:layout_width="match_parent"
