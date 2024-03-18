@@ -1,15 +1,11 @@
 package com.mrhiles.aos.activities
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.kakao.sdk.auth.AuthApiClient
 import com.kakao.sdk.auth.model.OAuthToken
-import com.kakao.sdk.common.model.KakaoSdkError
 import com.kakao.sdk.user.UserApiClient
-import com.mrhiles.aos.data.LoginRequire
 import com.mrhiles.aos.data.LoginResponse
 import com.mrhiles.aos.databinding.ActivityLoginBinding
 import com.mrhiles.aos.network.Login
@@ -18,8 +14,6 @@ import com.navercorp.nid.oauth.OAuthLoginCallback
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.net.URLEncoder
-import kotlin.math.log
 
 class LoginActivity : AppCompatActivity() {
     private val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }

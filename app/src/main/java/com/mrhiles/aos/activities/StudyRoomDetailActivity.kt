@@ -3,12 +3,8 @@ package com.mrhiles.aos.activities
 import android.os.Bundle
 import android.webkit.WebChromeClient
 import android.webkit.WebViewClient
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.google.gson.Gson
-import com.mrhiles.aos.R
 import com.mrhiles.aos.data.StudyRoom
 import com.mrhiles.aos.databinding.ActivityStudyRoomDetailBinding
 

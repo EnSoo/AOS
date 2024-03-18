@@ -5,11 +5,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.mrhiles.aos.activities.MainActivity
 import com.mrhiles.aos.adapter.ChatListRecyclerAdapter
 import com.mrhiles.aos.data.ChatRoom
 import com.mrhiles.aos.databinding.FragmentBottomChatBinding
-import com.mrhiles.aos.databinding.FragmentBottomHomeBinding
 
 class BottomChatFragment : Fragment(){
     private val binding by lazy { FragmentBottomChatBinding.inflate(layoutInflater) }

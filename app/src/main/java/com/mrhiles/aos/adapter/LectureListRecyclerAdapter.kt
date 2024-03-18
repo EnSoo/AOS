@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.mrhiles.aos.data.LectureInfo
 import com.mrhiles.aos.databinding.RecyclerAdapterLectureListBinding
-import com.mrhiles.aos.databinding.RecyclerAdapterStudyRoomListBinding
 
 class LectureListRecyclerAdapter(val context: Context, val documents:List<LectureInfo>) : Adapter<LectureListRecyclerAdapter.VH>() {
     inner class VH(val binding: RecyclerAdapterLectureListBinding) :ViewHolder(binding.root)
