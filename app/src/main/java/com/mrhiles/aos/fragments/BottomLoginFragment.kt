@@ -3,32 +3,14 @@ package com.mrhiles.aos.fragments
 import android.app.Dialog
 import android.content.Intent
 import android.os.Bundle
-import android.util.Base64
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
-import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mrhiles.aos.activities.LoginActivity
-import com.mrhiles.aos.activities.MainActivity
-import com.mrhiles.aos.activities.StudyRoomDetailActivity
-import com.mrhiles.aos.data.NaverAuthorize
-import com.mrhiles.aos.databinding.FragmentBottomHomeBinding
 import com.mrhiles.aos.databinding.FragmentBottomLoginBinding
-import com.mrhiles.aos.network.RetrofitHelper
-import com.mrhiles.aos.network.RetrofitService
-import com.navercorp.nid.NaverIdLoginSDK
-import com.navercorp.nid.oauth.OAuthLoginCallback
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.security.SecureRandom
 
 class BottomLoginFragment : BottomSheetDialogFragment() {
     private val binding by lazy { FragmentBottomLoginBinding.inflate(layoutInflater) }
