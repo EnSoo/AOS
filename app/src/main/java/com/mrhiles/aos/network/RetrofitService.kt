@@ -26,19 +26,13 @@ interface RetrofitService {
 
     // 리프레쉬 토큰을 이용하여 액세스 토큰 새로 발급 요청
     @POST("/user/token_generation.php")
-    fun tokenGenrate(@Url url:String, @Field("refresh_token") refreshToken:String, @Field("token_check_type") tokenCheckType:String) : Call<UserCheck>//액세스 토큰 요청
+    fun tokenGenrate(@Field("refresh_token") refreshToken:String, @Field("token_check_type") tokenCheckType:String) : Call<UserCheck>//액세스 토큰 요청
 
     // 서비스 별 url 값 달라지며, requrestData는 accessToken을 포함하고 있으며, 그 외 데이터는 서비스별로 보내는 갯수가 다름 getResponseData은 error는 그대로이나, 서비스 별로 오는 데이터가 다름(Json) 입맛에 맞게 사용 가능하며, 서비스별 data 클래스는 추가할 예정
     @POST
-    fun serviceRequest(@Url url: String, @Body requrestData:Any) : Call<getResponseData>
-//    @GET("/sign/login_init.php")
-//    fun getLogin(@Query("login_type") login_type:String, @Query("access_token") access_token: String="", @Query("email") email: String="", @Query("password") password: String="") : Call<LoginResponse>// POST 방식으로 전달
-//    네아로 회원정보 프로필 api.. 요청
-//    @GET("/v1/nid/me")
-//    fun getNidUserInfo(@Header("Authorization") authorization:String) : Call<String>
-//    네이버 로그인 인증 요청
-//    @GET("/auth/naver/token_init.php")
-//    fun getNaverLogin(
-//        @Query("refresh_token") refreshToken: String?, //값 code 고정
-//    ) : Call<String>
+    fun serviceRequest(@Url url: String, @Body requestData:requestData) : Call<getResponseData>
+
+    @FormUrlEncoded
+    @POST("/user/logout.php")
+    fun logout(@Field("refresh_token") refreshToken: String): Call<String>
 }

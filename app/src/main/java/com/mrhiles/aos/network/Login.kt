@@ -1,17 +1,10 @@
 package com.mrhiles.aos.network
 
 import android.content.Context
-import android.util.Log
-import android.widget.Toast
-import com.google.gson.Gson
 import com.mrhiles.aos.G
-import com.mrhiles.aos.data.LoginRequire
 import com.mrhiles.aos.data.LoginResponse
 import com.mrhiles.aos.data.UserInfo
 import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.http.Query
 import java.net.URLEncoder
 
 class Login(val context:Context, val login_type:String, val access_token: String="", val email: String="", val password: String="") {
