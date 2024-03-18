@@ -43,15 +43,15 @@ class LoginActivity : AppCompatActivity() {
         // 로그인 요청
         NaverIdLoginSDK.authenticate(this, object : OAuthLoginCallback {
             override fun onError(errorCode: Int, message: String) {
-                Toast.makeText(this@LoginActivity, "$message", Toast.LENGTH_SHORT).show()
+                Log.d("NaverLoginError","$message")
             }
 
             override fun onFailure(httpStatus: Int, message: String) {
-                Toast.makeText(this@LoginActivity, "$message", Toast.LENGTH_SHORT).show()
+                Log.d("NaverLoginFailure","$message")
             }
 
             override fun onSuccess() {
-                Toast.makeText(this@LoginActivity, "로그인 성공", Toast.LENGTH_SHORT).show()
+                Log.d("NaverLogin","네이버 액세스 토큰 발급 성공")
 
                 val accessToken:String? = NaverIdLoginSDK.getAccessToken()
                 accessToken ?: return
@@ -68,10 +68,10 @@ class LoginActivity : AppCompatActivity() {
                             loginResult.setResult()
                             val error=loginResult.responseData.error
                             if(error != "400" ) {
-                                if(error=="5200") Toast.makeText(this@LoginActivity, "${error}: 로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
-                                else Toast.makeText(this@LoginActivity, "${error}: 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
+                                if(error=="5200") Toast.makeText(this@LoginActivity, "네이버 간편 로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                else Toast.makeText(this@LoginActivity, "${error}: 네이버 간편 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
                             } else {
-                                Toast.makeText(this@LoginActivity, "${error}: 서비스 서버에서 토큰 발급이 성공적으로 이루어지지 않았습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(this@LoginActivity, "서비스 서버에서 토큰 발급이 성공적으로 이루어지지 않았습니다.", Toast.LENGTH_SHORT).show()
                             }
                             finish()
                         }

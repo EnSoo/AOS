@@ -34,9 +34,12 @@ class Login(val context:Context, val login_type:String, val access_token: String
     private fun setsharedPreferences() {
         val sharedPreferences = context.getSharedPreferences("logininfo", Context.MODE_PRIVATE)
         val editor=sharedPreferences.edit()
+        editor.putBoolean("is_login",G.isLogin)
         editor.putString("access_token",G.accessToken)
         editor.putString("refresh_token",G.refreshToken)
         editor.putString("login_type",G.userInfo.loginType)
+        editor.putString("providerId",G.userInfo.id)
+        editor.putString("email",G.userInfo.email)
         editor.apply()
     }
     fun getCall() : Call<LoginResponse> {
