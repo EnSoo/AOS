@@ -2,7 +2,10 @@ package com.mrhiles.aos.network
 
 import android.content.Context
 import android.content.Intent
+import android.database.Cursor
+import android.database.sqlite.SQLiteDatabase
 import android.util.Log
+import android.widget.ImageView
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
@@ -21,11 +24,12 @@ class Service(
     val serviceUrl : String,
     var params: Any
 ) {
-    lateinit var error:String
-    lateinit var code:String
-    lateinit var responseData:String
+    private lateinit var error:String
+    private lateinit var code:String
+    private lateinit var responseData:String
     private lateinit var accessToken: String
     private lateinit var refreshToken: String
+    private lateinit var db: SQLiteDatabase
     private fun getToken() {
         // 글로벌 변수에서 액세스 토큰 및 리프레시 토큰 가져오기
         accessToken=G.accessToken
@@ -37,23 +41,23 @@ class Service(
         return retrofitService
     }
 
-    fun serviceRequest() {
+    fun serviceRequest(processObject :Any) {
         if(G.isLogin) { // 로그인 상태 경우만 실행
             getToken()
             val retrofitService = setRetrofitService()
-
             // 파라미터를 Json 형태로 변환
             val data: String = Gson().toJson(params)
             var requestData: requestData = requestData(data, URLEncoder.encode(accessToken, "UTF-8"))
-
             val call = retrofitService.serviceRequest(serviceUrl, requestData)
             call.enqueue(object : Callback<responseData> {
                 override fun onResponse(
                     call: Call<responseData>,
                     response: Response<responseData>
                 ) {
+                    Log.d("error","${response}")
                     if (response.isSuccessful) {
                         val s = response.body()
+                        Log.d("error2","${s}")
                         s ?: return
                         error = s.error
                         code = s.code
@@ -61,11 +65,13 @@ class Service(
                         if (error == "5301") {  // 액세스 토큰이 만료 되었을 경우 리프레쉬로 요청
                             getAccessToken()
                         } else if (error == "5302" || error == "5303" || error == "5204") { // 5302, 리프레쉬 토큰 만료, 5303 유효하지 않은 토큰일 경우, 5204 액세스 토큰 재발급 실패
+                            Toast.makeText(context, "유효하지 않은 토큰으로 작업하였으므로 로그아웃 합니다.", Toast.LENGTH_SHORT).show()
                             logout()
                         } else if (error == "5300") {  // 유효한 토큰일 경우
-                            serviceProcess()
+                            serviceProcess(processObject)
                         } else if (error == "5200") { // 액세스 토큰 재발급 요청이 정상적으로 이루어 졌을 경우 서비스 재요청
-                            serviceRequest()
+                            serviceRequest(processObject)
+
                         }
                     }
                 }
@@ -83,11 +89,32 @@ class Service(
     }
 
 // 서비스별로 멘트를 다르게 처리해야 함
-    private fun serviceProcess() {
+    private fun serviceProcess(processObject:Any) {
         if(code == "200") {
-            Toast.makeText(context, "성공적으로 처리 되었습니다.", Toast.LENGTH_SHORT).show()
+            when(serviceUrl) { // 서비스에 따라 파싱이 필요
+                "/user/favor.php" -> favorProcess(processObject as ImageView)
+            }
         } else {
             Toast.makeText(context, "오류가 있어 처리 되지 못했습니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun favorProcess(imageView:ImageView) {
+        // 성공만 있으면 되므로...
+        Toast.makeText(context, "찜을 했습니다.", Toast.LENGTH_SHORT).show()
+
+        //sqllite 작업 시작
+        val param=params as studyRoomFaovr
+        if(param.type=="remove") { // favor 삭제 기능일 경우
+            imageView.setImageResource(R.drawable.ic_favor_border)
+            param.apply {
+                db.execSQL("INSERT INTO favor VALUES('$id','$place_name','$category_name','$phone','$address_name','$x','$y','$place_url','$place_url')")
+            }
+        } else { // favor 추가 기능일 경우
+            imageView.setImageResource(R.drawable.ic_favor_full)
+            param.apply {
+                db.execSQL("DELETE FROM favor WHERE id=?", arrayOf(id))
+            }
         }
     }
 
@@ -98,12 +125,11 @@ class Service(
         val call=retrofitService.logout(URLEncoder.encode(refreshToken, "UTF-8"))
         call.enqueue(object : Callback<String>{
             override fun onResponse(call: Call<String>, response: Response<String>) {
-
                 if (response.isSuccessful) {
                     val error=response.body()
+
                     error ?: return
                     val ma: MainActivity = context as MainActivity
-
                     if(error =="7201") {
                         Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
                     }
@@ -151,7 +177,7 @@ class Service(
 
     fun getAccessToken() {
         val retrofitService=setRetrofitService()
-        val call=retrofitService.tokenGenrate(refreshToken,"refresh_token")
+        val call=retrofitService.tokenGenrate(URLEncoder.encode(refreshToken, "UTF-8"),"refresh_token")
         call.enqueue(object : Callback<UserCheck>{
             override fun onResponse(call: Call<UserCheck>, response: Response<UserCheck>) {
                 if (response.isSuccessful) {

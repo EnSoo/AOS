@@ -6,10 +6,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
+import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.LoginActivity
+import com.mrhiles.aos.activities.MainActivity
 import com.mrhiles.aos.databinding.FragmentBottomLoginBinding
 
 class BottomLoginFragment : BottomSheetDialogFragment() {
@@ -30,18 +33,24 @@ class BottomLoginFragment : BottomSheetDialogFragment() {
         binding.bnvAppleLogin.setOnClickListener {
             intent.putExtra("login_type","email")
             startActivity(intent)
+            val ma: MainActivity = context as MainActivity
+            ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
             dialog.dismiss()
         }
         // 네이버 클릭 시
         binding.bnvNaverLogin.setOnClickListener {
             intent.putExtra("login_type","naver")
             startActivity(intent)
+            val ma: MainActivity = context as MainActivity
+            ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
             dialog.dismiss()
         }
         // 카카오 클릭 시
         binding.bnvKakaoLogin.setOnClickListener {
             intent.putExtra("login_type","kakao")
             startActivity(intent)
+            val ma: MainActivity = context as MainActivity
+            ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
             dialog.dismiss()
         }
 
