@@ -54,10 +54,10 @@ class Service(
                     call: Call<responseData>,
                     response: Response<responseData>
                 ) {
-
+                    Log.d("s","${response}")
                     if (response.isSuccessful) {
                         val s = response.body()
-                        Log.d("s","${s}")
+
                         s ?: return
                         error = s.error
                         code = s.code
@@ -102,7 +102,6 @@ class Service(
 
     private fun favorProcess(imageView:ImageView) {
         // 성공만 있으면 되므로...
-        Toast.makeText(context, "찜을 했습니다.", Toast.LENGTH_SHORT).show()
 
         //sqllite 작업 시작
         // "study.db"라는 이름으로 데이터베이스 파일을 만들거나 열어서 참조하기
@@ -114,13 +113,16 @@ class Service(
         if(param.type=="remove") { // favor 삭제 기능일 경우
             imageView.setImageResource(R.drawable.ic_favor_border)
             param.apply {
-                db.execSQL("INSERT INTO favor VALUES('$id','$place_name','$category_name','$phone','$address_name','$x','$y','$place_url','$place_url')")
-            }
-        } else { // favor 추가 기능일 경우
-            imageView.setImageResource(R.drawable.ic_favor_full)
-            param.apply {
                 db.execSQL("DELETE FROM favor WHERE id=?", arrayOf(id))
             }
+            Toast.makeText(context, "찜을 삭제 했습니다.", Toast.LENGTH_SHORT).show()
+        } else { // favor 추가 기능일 경우
+            imageView.setImageResource(R.drawable.ic_favor_full)
+
+            param.apply {
+                db.execSQL("INSERT INTO favor VALUES('$id','$place_name','$category_name','$phone','$address_name','$x','$y','$place_url')")
+            }
+            Toast.makeText(context, "찜을 추가 했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
