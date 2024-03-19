@@ -1,6 +1,7 @@
 package com.mrhiles.aos.network
 
 import android.content.Context
+import android.util.Log
 import com.mrhiles.aos.G
 import com.mrhiles.aos.data.LoginResponse
 import com.mrhiles.aos.data.UserInfo
@@ -8,7 +9,6 @@ import retrofit2.Call
 import java.net.URLEncoder
 
 class Login(val context:Context, val login_type:String, val access_token: String="", val email: String="", val password: String="") {
-    private val host:String="https://ec2-34-238-84-139.compute-1.amazonaws.com"
     lateinit var responseData:LoginResponse
 
     fun setResult() { //global 변수 및 sharedPreferences 저장
@@ -36,11 +36,11 @@ class Login(val context:Context, val login_type:String, val access_token: String
         editor.apply()
     }
     fun getCall() : Call<LoginResponse> {
-        val retrofit=RetrofitHelper.getunsafeRetrofitInstance(host)
+        val retrofit=RetrofitHelper.getunsafeRetrofitInstance(G.baseUrl)
         val retrofitService=retrofit.create(RetrofitService::class.java)
         val call=retrofitService.getLogin(login_type,
             "${URLEncoder.encode(access_token, "UTF-8")}",
-            "${URLEncoder.encode(email, "UTF-8")}",
+            email,
             "${URLEncoder.encode(password, "UTF-8")}")
         return call
     }

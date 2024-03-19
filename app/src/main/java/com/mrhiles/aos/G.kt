@@ -8,5 +8,6 @@ class G {
         var userInfo:UserInfo=UserInfo("","","")
         var accessToken:String=""
         var refreshToken:String=""
+        val baseUrl:String="https://ec2-34-238-84-139.compute-1.amazonaws.com"
     }
 }

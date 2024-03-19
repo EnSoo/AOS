@@ -1,20 +1,23 @@
 package com.mrhiles.aos.network
 
 import android.content.Context
+import android.content.Intent
 import android.widget.Toast
 import com.google.gson.Gson
 import com.mrhiles.aos.G
+import com.mrhiles.aos.activities.LoginActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class ServiceRequest(
+class Service(
     val context : Context,
-    val baseUrl : String="https://ec2-34-238-84-139.compute-1.amazonaws.com",
     val serviceUrl : String,
     var params: Any
 ) {
-    private lateinit var error:String
+    lateinit var error:String
+    lateinit var code:String
+    lateinit var responseData:String
     private lateinit var accessToken: String
     private lateinit var refreshToken: String
     private fun getToken() {
@@ -23,50 +26,58 @@ class ServiceRequest(
         refreshToken=G.refreshToken
     }
     private fun setRetrofitService() : RetrofitService {
-        val retrofit= RetrofitHelper.getRetrofitInstance(baseUrl)
+        val retrofit= RetrofitHelper.getRetrofitInstance(G.baseUrl)
         val retrofitService=retrofit.create(RetrofitService::class.java)
         return retrofitService
     }
 
     fun serviceRequest() {
-        getToken()
-        val retrofitService=setRetrofitService()
+        if(G.isLogin) { // 로그인 상태 경우만 실행
+            getToken()
+            val retrofitService = setRetrofitService()
 
-        // 파라미터를 Json 형태로 변환
-        var data:String=Gson().toJson(params)
-        var requestData:requestData= requestData(data, accessToken)
+            // 파라미터를 Json 형태로 변환
+            val data: String = Gson().toJson(params)
+            var requestData: requestData = requestData(data, accessToken)
 
-        val call=retrofitService.serviceRequest(serviceUrl,requestData)
-        call.enqueue(object : Callback<getResponseData>{
-            override fun onResponse(
-                call: Call<getResponseData>,
-                response: Response<getResponseData>
-            ) {
-                if (response.isSuccessful) {
-                    val s= response.body()
-                    s ?: return
-                    error=s.error
-                    val code=s.code
-                    if (error == "5301") {  // 액세스 토큰이 만료 되었을 경우 리프레쉬로 요청
-                        getAccessToken()
-                    } else if(error == "5302" || error == "5303" || error == "5204"){ // 5302, 리프레쉬 토큰 만료, 5303 유효하지 않은 토큰일 경우, 5204 액세스 토큰 재발급 실패
-                        logout()
-                    } else if(error=="5300") {  // 유효한 토큰일 경우
-                        serviceProcess(code)
-                    } else if(error =="5200") { // 액세스 토큰 재발급 요청이 정상적으로 이루어 졌을 경우 서비스 재요청
-                        serviceRequest()
+            val call = retrofitService.serviceRequest(serviceUrl, requestData)
+            call.enqueue(object : Callback<responseData> {
+                override fun onResponse(
+                    call: Call<responseData>,
+                    response: Response<responseData>
+                ) {
+                    if (response.isSuccessful) {
+                        val s = response.body()
+                        s ?: return
+                        error = s.error
+                        code = s.code
+                        responseData = s.params
+                        if (error == "5301") {  // 액세스 토큰이 만료 되었을 경우 리프레쉬로 요청
+                            getAccessToken()
+                        } else if (error == "5302" || error == "5303" || error == "5204") { // 5302, 리프레쉬 토큰 만료, 5303 유효하지 않은 토큰일 경우, 5204 액세스 토큰 재발급 실패
+                            logout()
+                        } else if (error == "5300") {  // 유효한 토큰일 경우
+                            serviceProcess()
+                        } else if (error == "5200") { // 액세스 토큰 재발급 요청이 정상적으로 이루어 졌을 경우 서비스 재요청
+                            serviceRequest()
+                        }
                     }
                 }
-            }
 
-            override fun onFailure(call: Call<getResponseData>, t: Throwable) {
-                Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
+                override fun onFailure(call: Call<responseData>, t: Throwable) {
+                    Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        } else {
+            //로그인 상태가 아닐 경우 activity 띄워야 함
+            val intent = Intent(context, LoginActivity::class.java)
+            intent.putExtra("login_type",G.userInfo.loginType)
+            context.startActivity(intent)
+        }
     }
 
 // 서비스별로 멘트를 다르게 처리해야 함
-    private fun serviceProcess(code:String) {
+    private fun serviceProcess() {
         if(code == "200") {
             Toast.makeText(context, "성공적으로 처리 되었습니다.", Toast.LENGTH_SHORT).show()
         } else {

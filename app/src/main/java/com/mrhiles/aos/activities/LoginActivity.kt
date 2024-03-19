@@ -1,11 +1,13 @@
 package com.mrhiles.aos.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
+import com.mrhiles.aos.G
 import com.mrhiles.aos.data.LoginResponse
 import com.mrhiles.aos.databinding.ActivityLoginBinding
 import com.mrhiles.aos.network.Login
@@ -17,22 +19,62 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     private val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
-    private val redirectUri by lazy { "https://ec2-34-238-84-139.compute-1.amazonaws.com" }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
         val loginType: String? = intent.getStringExtra("login_type")
 
         when(loginType) {
-            "email" -> clickEmail()
             "naver" -> clickNaver()
             "kakao" -> clickKakao()
         }
+
+        // 로그인 버튼 클릭 시
+        binding.btnSignin.setOnClickListener { clickEmail() }
+        binding.bnvKakaoLogin.setOnClickListener { clickNaver() }
+        binding.bnvKakaoLogin.setOnClickListener { clickKakao() }
+
+        // 이메일 회원가입 클릭 시
+        binding.btnSignup.setOnClickListener { startActivity(Intent(this, SignUpActivity::class.java)) }
+
+        // 뒤로가기 클릭 시
+        binding.toolbar.setNavigationOnClickListener { finish() }
     }
 
-    //이메일 로그인
+    // 이메일 로그인
     private fun clickEmail() {
+        var email=binding.inputLayoutEmail.editText!!.text.toString()
+        var password=binding.inputLayoutPassword.editText!!.text.toString()
+        val loginResult=Login(this,"email", "",email,password)
+        val call= loginResult.getCall()
+        call.enqueue( object : Callback<LoginResponse>{
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                if (response.isSuccessful) {
+                    val s= response.body()
+                    s ?: return
+                    loginResult.responseData=s
 
+                    loginResult.setResult()
+                    val error=loginResult.responseData.error
+                    Log.d("test","$error")
+                    if(error != "400" ) {
+                        if(error=="5200") {
+                            Toast.makeText(this@LoginActivity, "이메일 로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                            finish()
+                        }
+                        else Toast.makeText(this@LoginActivity, "이메일 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(this@LoginActivity, "서비스 서버에서 토큰 발급이 성공적으로 이루어지지 않았습니다.", Toast.LENGTH_SHORT).show()
+                    }
+
+                }
+            }
+
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                Toast.makeText(this@LoginActivity, "${t.message}", Toast.LENGTH_SHORT).show()
+            }
+
+        })
     }
     //네이버 간편 로그인
     private fun clickNaver() {

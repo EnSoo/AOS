@@ -23,14 +23,16 @@ interface RetrofitService {
     @FormUrlEncoded
     @POST("/sign/login_init.php")
     fun getLogin(@Field("login_type") login_type:String, @Field("access_token") access_token: String="", @Field("email") email: String="", @Field("password") password: String="") : Call<LoginResponse>// POST 방식으로 전달
-
+    @FormUrlEncoded
+    @POST("/sign/email_signup.php")
+    fun getSignUp(@Field("email") email:String, @Field("password") password:String, @Field("name") name:String, @Field("nickname") nickname: String) : Call<String>// POST 방식으로 전달
     // 리프레쉬 토큰을 이용하여 액세스 토큰 새로 발급 요청
     @POST("/user/token_generation.php")
     fun tokenGenrate(@Field("refresh_token") refreshToken:String, @Field("token_check_type") tokenCheckType:String) : Call<UserCheck>//액세스 토큰 요청
 
     // 서비스 별 url 값 달라지며, requrestData는 accessToken을 포함하고 있으며, 그 외 데이터는 서비스별로 보내는 갯수가 다름 getResponseData은 error는 그대로이나, 서비스 별로 오는 데이터가 다름(Json) 입맛에 맞게 사용 가능하며, 서비스별 data 클래스는 추가할 예정
     @POST
-    fun serviceRequest(@Url url: String, @Body requestData:requestData) : Call<getResponseData>
+    fun serviceRequest(@Url url: String, @Body requestData:requestData) : Call<responseData>
 
     @FormUrlEncoded
     @POST("/user/logout.php")
