@@ -1,6 +1,7 @@
 package com.mrhiles.aos.network
 
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
@@ -46,18 +47,17 @@ class Service(
             getToken()
             val retrofitService = setRetrofitService()
             // 파라미터를 Json 형태로 변환
-            val data: String = Gson().toJson(params)
-            var requestData: requestData = requestData(data, URLEncoder.encode(accessToken, "UTF-8"))
+            var requestData: requestData = requestData(params, URLEncoder.encode(accessToken, "UTF-8"))
             val call = retrofitService.serviceRequest(serviceUrl, requestData)
             call.enqueue(object : Callback<responseData> {
                 override fun onResponse(
                     call: Call<responseData>,
                     response: Response<responseData>
                 ) {
-                    Log.d("error","${response}")
+
                     if (response.isSuccessful) {
                         val s = response.body()
-                        Log.d("error2","${s}")
+                        Log.d("s","${s}")
                         s ?: return
                         error = s.error
                         code = s.code
@@ -78,6 +78,7 @@ class Service(
 
                 override fun onFailure(call: Call<responseData>, t: Throwable) {
                     Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
+
                 }
             })
         } else {
@@ -104,6 +105,11 @@ class Service(
         Toast.makeText(context, "찜을 했습니다.", Toast.LENGTH_SHORT).show()
 
         //sqllite 작업 시작
+        // "study.db"라는 이름으로 데이터베이스 파일을 만들거나 열어서 참조하기
+        db= ContextWrapper(context).openOrCreateDatabase("study", Context.MODE_PRIVATE,null)
+
+        // "favor"라는 이름의 표(테이블) 만들기 - SQL 쿼리문을 사용하여.. CRUD 작업수행
+        db.execSQL("CREATE TABLE IF NOT EXISTS favor(id TEXT PRIMARY KEY, place_name TEXT, category_name TEXT, phone TEXT, address_name TEXT, x TEXT, y TEXT, place_url TEXT)")
         val param=params as studyRoomFaovr
         if(param.type=="remove") { // favor 삭제 기능일 경우
             imageView.setImageResource(R.drawable.ic_favor_border)

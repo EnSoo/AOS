@@ -5,6 +5,7 @@ import android.content.ContextWrapper
 import android.content.Intent
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -61,23 +62,22 @@ class StudyRoomTapHomeListRecyclerAdapter(val context:Context, val documents:Lis
             context.startActivity(intent)
         }
 
-        // "place.db"라는 이름으로 데이터베이스 파일을 만들거나 열어서 참조하기
+        // "study.db"라는 이름으로 데이터베이스 파일을 만들거나 열어서 참조하기
         db=ContextWrapper(context).openOrCreateDatabase("study", Context.MODE_PRIVATE,null)
 
         // "favor"라는 이름의 표(테이블) 만들기 - SQL 쿼리문을 사용하여.. CRUD 작업수행
         db.execSQL("CREATE TABLE IF NOT EXISTS favor(id TEXT PRIMARY KEY, place_name TEXT, category_name TEXT, phone TEXT, address_name TEXT, x TEXT, y TEXT, place_url TEXT)")
-
         holder.binding.favor.setOnClickListener {
             studyRoom.also { sr->
                 val cursor: Cursor = db.rawQuery("SELECT * FROM favor WHERE id=?", arrayOf(sr.id))
                 if(cursor.count>0){ // sql 조회 시 있을 경우 -> 삭제
                     val studyRoomFaovr= studyRoomFaovr(sr.id,sr.place_name, sr.category_name, sr.phone, sr.address_name, sr.x, sr.y, sr.place_url,"remove")
-                    val service= Service(context,"/user/favor.php",Gson().toJson(studyRoomFaovr))
-                    service.serviceRequest(this)
+                    val service= Service(context,"/user/favor.php",studyRoomFaovr)
+                    service.serviceRequest(it)
                 } else { // sql 조회 시 없을 경우 -> 추가
                     val studyRoomFaovr= studyRoomFaovr(sr.id,sr.place_name, sr.category_name, sr.phone, sr.address_name, sr.x, sr.y, sr.place_url,"add")
-                    val service= Service(context,"/user/favor.php",Gson().toJson(studyRoomFaovr))
-                    service.serviceRequest(this)
+                    val service= Service(context,"/user/favor.php",studyRoomFaovr)
+                    service.serviceRequest(it)
                 }
             }
         }

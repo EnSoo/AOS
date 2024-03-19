@@ -2,7 +2,7 @@ package com.mrhiles.aos.network
 
 data class UserCheck(val access_token:String, val error:String)
 data class responseData(val params:String, val code:String, val error:String) // code 200 서비스 작업 성공, 201 서비스 작업 실패
-data class requestData(val params:String, val access_token:String) // requestData은 보낼 데이터 json 값
+data class requestData(val params:Any, val access_token:String) // requestData은 보낼 데이터 json 값
 
 // requestData params 데이터 리스트
 data class studyRoomFaovr (
