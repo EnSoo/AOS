@@ -1,6 +1,8 @@
 package com.mrhiles.aos.activities
 
+import android.content.Context
 import android.os.Bundle
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -72,6 +74,10 @@ class SignUpActivity : AppCompatActivity() {
 
             })
         }
-
+        val imm=this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.inputLayoutEmail.getWindowToken(),0);
+        imm.hideSoftInputFromWindow(binding.inputLayoutPassword.getWindowToken(),0);
+        imm.hideSoftInputFromWindow(binding.inputLayoutName.getWindowToken(),0);
+        imm.hideSoftInputFromWindow(binding.inputLayoutNickname.getWindowToken(),0);
     }
 }

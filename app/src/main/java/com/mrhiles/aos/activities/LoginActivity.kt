@@ -1,8 +1,11 @@
 package com.mrhiles.aos.activities
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.kakao.sdk.auth.model.OAuthToken
@@ -25,12 +28,16 @@ class LoginActivity : AppCompatActivity() {
         val loginType: String? = intent.getStringExtra("login_type")
 
         when(loginType) {
+            "email" -> binding.entire.visibility= View.VISIBLE
             "naver" -> clickNaver()
             "kakao" -> clickKakao()
         }
 
         // 로그인 버튼 클릭 시
-        binding.btnSignin.setOnClickListener { clickEmail() }
+        binding.btnSignin.setOnClickListener {
+            clickEmail()
+            binding.entire.visibility= View.INVISIBLE
+        }
         binding.bnvKakaoLogin.setOnClickListener { clickNaver() }
         binding.bnvKakaoLogin.setOnClickListener { clickKakao() }
 
@@ -60,13 +67,12 @@ class LoginActivity : AppCompatActivity() {
                     if(error != "400" ) {
                         if(error=="5200") {
                             Toast.makeText(this@LoginActivity, "이메일 로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
-                            finish()
                         }
                         else Toast.makeText(this@LoginActivity, "이메일 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
                     } else {
                         Toast.makeText(this@LoginActivity, "서비스 서버에서 토큰 발급이 성공적으로 이루어지지 않았습니다.", Toast.LENGTH_SHORT).show()
                     }
-
+                    finish()
                 }
             }
 
@@ -75,6 +81,9 @@ class LoginActivity : AppCompatActivity() {
             }
 
         })
+        val imm=this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.inputLayoutEmail.getWindowToken(),0);
+        imm.hideSoftInputFromWindow(binding.inputLayoutPassword.getWindowToken(),0);
     }
     //네이버 간편 로그인
     private fun clickNaver() {

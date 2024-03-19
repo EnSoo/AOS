@@ -2,13 +2,19 @@ package com.mrhiles.aos.network
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.widget.Toast
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import com.mrhiles.aos.G
+import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.LoginActivity
+import com.mrhiles.aos.activities.MainActivity
+import com.mrhiles.aos.data.UserInfo
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.net.URLEncoder
 
 class Service(
     val context : Context,
@@ -26,7 +32,7 @@ class Service(
         refreshToken=G.refreshToken
     }
     private fun setRetrofitService() : RetrofitService {
-        val retrofit= RetrofitHelper.getRetrofitInstance(G.baseUrl)
+        val retrofit= RetrofitHelper.getunsafeRetrofitInstance(G.baseUrl)
         val retrofitService=retrofit.create(RetrofitService::class.java)
         return retrofitService
     }
@@ -38,7 +44,7 @@ class Service(
 
             // 파라미터를 Json 형태로 변환
             val data: String = Gson().toJson(params)
-            var requestData: requestData = requestData(data, accessToken)
+            var requestData: requestData = requestData(data, URLEncoder.encode(accessToken, "UTF-8"))
 
             val call = retrofitService.serviceRequest(serviceUrl, requestData)
             call.enqueue(object : Callback<responseData> {
@@ -87,21 +93,29 @@ class Service(
 
 // 로그아웃. 네이버, 카카오 등 브라우저 로그인을 취소해야 함
     fun logout() {
+        getToken()
         val retrofitService=setRetrofitService()
-        val call=retrofitService.logout(refreshToken)
+        val call=retrofitService.logout(URLEncoder.encode(refreshToken, "UTF-8"))
         call.enqueue(object : Callback<String>{
             override fun onResponse(call: Call<String>, response: Response<String>) {
+
                 if (response.isSuccessful) {
                     val error=response.body()
                     error ?: return
+                    val ma: MainActivity = context as MainActivity
+
                     if(error =="7201") {
                         Toast.makeText(context, "로그아웃 실패", Toast.LENGTH_SHORT).show()
                     }
-                    if(error =="7200") {
+                    if(error =="7200" || error =="6200" || error =="6201") { // 로그인된 회원에서 찾을 수 없음 6201
                         Toast.makeText(context, "로그아웃 성공", Toast.LENGTH_SHORT).show()
-                    }
-                    if(error =="6201") {
-                        Toast.makeText(context, "로그인 된 회원에서 찾을 수 없음", Toast.LENGTH_SHORT).show()
+                        // sharedPreferences 초기화
+                        initsharedPreferences()
+
+                        // 글로벌변수 초기화
+                        initGlobal()
+
+                        ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
                     }
 
 // 간편 로그인 취소 처리 추가 부분
@@ -113,6 +127,26 @@ class Service(
             }
 
         })
+    }
+
+    private fun initsharedPreferences() {
+        val sharedPreferences = context.getSharedPreferences("logininfo", Context.MODE_PRIVATE)
+        val editor=sharedPreferences.edit()
+        editor.putBoolean("is_login",false)
+        editor.putString("access_token","")
+        editor.putString("refresh_token","")
+        editor.putString("login_type","")
+        editor.putString("providerId","")
+        editor.putString("email","")
+        editor.apply()
+    }
+
+    private fun initGlobal() {
+        // 글로벌 변수 설정
+        G.isLogin=false
+        G.accessToken=""
+        G.refreshToken=""
+        G.userInfo= UserInfo("","","")
     }
 
     fun getAccessToken() {
