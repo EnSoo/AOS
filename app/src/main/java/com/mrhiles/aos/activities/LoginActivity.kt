@@ -13,6 +13,8 @@ import com.kakao.sdk.user.UserApiClient
 import com.mrhiles.aos.data.LoginResponse
 import com.mrhiles.aos.databinding.ActivityLoginBinding
 import com.mrhiles.aos.network.LoginProcess
+import com.mrhiles.aos.network.ServiceRequest
+import com.mrhiles.aos.network.studyRoomFaovr
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import retrofit2.Call
@@ -179,5 +181,11 @@ class LoginActivity : AppCompatActivity() {
             UserApiClient.instance.loginWithKakaoAccount(this, callback= callback)
         }
 
+    }
+
+    private fun favorLoad() {
+        val studyRoomFaovr= studyRoomFaovr(type="load")
+        val serviceRequest= ServiceRequest(this,"/user/favor.php",studyRoomFaovr)
+        serviceRequest.serviceRequest("")
     }
 }

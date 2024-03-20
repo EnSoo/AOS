@@ -8,6 +8,7 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.gson.Gson
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.LoginActivity
@@ -114,13 +115,19 @@ class ServiceRequest(
                 db.execSQL("DELETE FROM favor WHERE id=?", arrayOf(id))
             }
             Toast.makeText(context, "찜을 삭제 했습니다.", Toast.LENGTH_SHORT).show()
-        } else { // favor 추가 기능일 경우
+        } else if (param.type=="add"){ // favor 추가 기능일 경우
             imageView.setImageResource(R.drawable.ic_favor_full)
 
             param.apply {
                 db.execSQL("INSERT INTO favor VALUES('$id','$place_name','$category_name','$phone','$address_name','$x','$y','$place_url')")
             }
             Toast.makeText(context, "찜을 추가 했습니다.", Toast.LENGTH_SHORT).show()
+        } else if (param.type=="load") { //load 할 경우
+            val studyRoomFavorList:Array<LoadStudyRoomFaovr> =Gson().fromJson(responseData,Array<LoadStudyRoomFaovr>::class.java)
+            studyRoomFavorList.forEach {
+                db.execSQL("INSERT INTO favor VALUES('${it.id}','${it.place_name}','${it.category_name}','${it.phone}','${it.address_name}'," +
+                        "'${it.x}','${it.y}','${it.place_url}')")
+            }
         }
     }
 
@@ -146,6 +153,9 @@ class ServiceRequest(
 
                         // 글로벌변수 초기화
                         initGlobal()
+
+                        //sqllite 초기화
+                        initSqlLite()
 
                         ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
                     }
@@ -179,6 +189,11 @@ class ServiceRequest(
         G.accessToken=""
         G.refreshToken=""
         G.userInfo= UserInfo("","","")
+    }
+
+    private fun initSqlLite() {
+        db= ContextWrapper(context).openOrCreateDatabase("study", Context.MODE_PRIVATE,null)
+        db.execSQL("DELETE FROM favor", null)
     }
 
     fun getAccessToken() {

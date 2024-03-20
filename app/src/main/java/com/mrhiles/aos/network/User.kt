@@ -6,6 +6,19 @@ data class requestData(val params:Any, val access_token:String) // requestData�
 
 // requestData params 데이터 리스트
 data class studyRoomFaovr (
+    var id:String="",                   //장소 ID
+    var place_name:String="",           // 장소명, 업체명
+    var category_name:String="",        // 카테고리 이름
+    var phone:String="",                // 전화번호
+    var address_name:String="",         // 전체 지번 주소
+    var x:String="",                    // X 좌표값, 경위도인 경우 longitude(경도)
+    var y:String="",                    // Y 좌표값, 경위도인 경우 latitue(위도)
+    var place_url:String="",            // 장소 상세페이지 URL
+    var type:String                  // 삭제(remove), 추가(add)
+)
+
+// responseData params 데이터 리스트
+data class LoadStudyRoomFaovr (
     var id:String,                   //장소 ID
     var place_name:String,           // 장소명, 업체명
     var category_name:String,        // 카테고리 이름
@@ -14,7 +27,4 @@ data class studyRoomFaovr (
     var x:String,                    // X 좌표값, 경위도인 경우 longitude(경도)
     var y:String,                    // Y 좌표값, 경위도인 경우 latitue(위도)
     var place_url:String,            // 장소 상세페이지 URL
-    var type:String                  // 삭제(remove), 추가(add)
 )
-
-// responseData params 데이터 리스트

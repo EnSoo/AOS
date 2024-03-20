@@ -17,6 +17,8 @@ import com.mrhiles.aos.activities.MapActivity
 import com.mrhiles.aos.activities.StudyRoomDetailActivity
 import com.mrhiles.aos.data.StudyRoom
 import com.mrhiles.aos.databinding.RecyclerAdapterStudyRoomListBinding
+import com.mrhiles.aos.network.ServiceRequest
+import com.mrhiles.aos.network.studyRoomFaovr
 
 class StudyRoomTapHomeFavorRecyclerAdapter(val context:Context, val documents:List<StudyRoom>) : Adapter<StudyRoomTapHomeFavorRecyclerAdapter.VH>(){
     inner class VH(val binding:RecyclerAdapterStudyRoomListBinding) : ViewHolder(binding.root)
@@ -65,6 +67,21 @@ class StudyRoomTapHomeFavorRecyclerAdapter(val context:Context, val documents:Li
             intent.putExtra("studyRoom",s)
             intent.putExtra("type","Item") // Type이 Item일 경우 1개만 검색
             context.startActivity(intent)
+        }
+
+        holder.binding.favor.setOnClickListener {
+            studyRoom.also { sr->
+                val cursor: Cursor = db.rawQuery("SELECT * FROM favor WHERE id=?", arrayOf(sr.id))
+                if(cursor.count>0){ // sql 조회 시 있을 경우 -> 삭제
+                    val studyRoomFaovr= studyRoomFaovr(sr.id,sr.place_name, sr.category_name, sr.phone, sr.address_name, sr.x, sr.y, sr.place_url,"remove")
+                    val serviceRequest= ServiceRequest(context,"/user/favor.php",studyRoomFaovr)
+                    serviceRequest.serviceRequest(it)
+                } else { // sql 조회 시 없을 경우 -> 추가
+                    val studyRoomFaovr= studyRoomFaovr(sr.id,sr.place_name, sr.category_name, sr.phone, sr.address_name, sr.x, sr.y, sr.place_url,"add")
+                    val serviceRequest= ServiceRequest(context,"/user/favor.php",studyRoomFaovr)
+                    serviceRequest.serviceRequest(it)
+                }
+            }
         }
     }
 
