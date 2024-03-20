@@ -1,5 +1,6 @@
 package com.mrhiles.aos.data
 
+// 삭제 예정
 data class LectureInfo(
     val lectureName : String,           // 강의 제목
     val lectureContent : String,        // 강의 컨텐츠

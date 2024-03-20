@@ -10,12 +10,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
-import com.mrhiles.aos.R
 import com.mrhiles.aos.data.LoginResponse
 import com.mrhiles.aos.databinding.ActivityLoginBinding
 import com.mrhiles.aos.network.LoginProcess
 import com.mrhiles.aos.network.ServiceRequest
-import com.mrhiles.aos.network.studyRoomFaovr
+import com.mrhiles.aos.data.studyRoomFaovr
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import retrofit2.Call

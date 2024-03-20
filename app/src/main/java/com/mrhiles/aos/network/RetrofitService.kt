@@ -2,6 +2,9 @@ package com.mrhiles.aos.network
 
 import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
 import com.mrhiles.aos.data.LoginResponse
+import com.mrhiles.aos.data.UserCheck
+import com.mrhiles.aos.data.requestData
+import com.mrhiles.aos.data.responseData
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.Field
@@ -32,7 +35,7 @@ interface RetrofitService {
 
     // 서비스 별 url 값 달라지며, requrestData는 accessToken을 포함하고 있으며, 그 외 데이터는 서비스별로 보내는 갯수가 다름 getResponseData은 error는 그대로이나, 서비스 별로 오는 데이터가 다름(Json) 입맛에 맞게 사용 가능하며, 서비스별 data 클래스는 추가할 예정
     @POST
-    fun serviceRequest(@Url url: String, @Body requestData:requestData) : Call<responseData>
+    fun serviceRequest(@Url url: String, @Body requestData: requestData) : Call<responseData>
 
     @FormUrlEncoded
     @POST("/user/logout.php")

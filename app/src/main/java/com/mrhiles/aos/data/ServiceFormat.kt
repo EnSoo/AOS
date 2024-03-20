@@ -1,4 +1,4 @@
-package com.mrhiles.aos.network
+package com.mrhiles.aos.data
 
 data class UserCheck(val access_token:String, val error:String)
 data class responseData(val params:String, val code:String, val error:String) // code 200 서비스 작업 성공, 201 서비스 작업 실패

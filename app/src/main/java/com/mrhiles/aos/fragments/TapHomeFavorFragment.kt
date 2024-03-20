@@ -12,7 +12,6 @@ import androidx.fragment.app.Fragment
 import com.mrhiles.aos.adapter.StudyRoomTapHomeFavorRecyclerAdapter
 import com.mrhiles.aos.data.StudyRoom
 import com.mrhiles.aos.databinding.FragmentTapHomeFavorBinding
-import com.mrhiles.aos.network.studyRoomFaovr
 
 class TapHomeFavorFragment : Fragment(){
     // kakao search API 응답결과 객체 참조변수

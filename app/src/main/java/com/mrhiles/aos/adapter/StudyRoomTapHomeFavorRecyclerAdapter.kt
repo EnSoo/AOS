@@ -18,7 +18,7 @@ import com.mrhiles.aos.activities.StudyRoomDetailActivity
 import com.mrhiles.aos.data.StudyRoom
 import com.mrhiles.aos.databinding.RecyclerAdapterStudyRoomListBinding
 import com.mrhiles.aos.network.ServiceRequest
-import com.mrhiles.aos.network.studyRoomFaovr
+import com.mrhiles.aos.data.studyRoomFaovr
 
 class StudyRoomTapHomeFavorRecyclerAdapter(val context:Context, val documents:List<StudyRoom>) : Adapter<StudyRoomTapHomeFavorRecyclerAdapter.VH>(){
     inner class VH(val binding:RecyclerAdapterStudyRoomListBinding) : ViewHolder(binding.root)

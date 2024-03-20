@@ -4,21 +4,19 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.gson.Gson
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.LoginActivity
 import com.mrhiles.aos.activities.MainActivity
+import com.mrhiles.aos.data.LoadStudyRoomFaovr
+import com.mrhiles.aos.data.UserCheck
 import com.mrhiles.aos.data.UserInfo
-import com.mrhiles.aos.fragments.BottomHomeFragment
-import com.mrhiles.aos.fragments.BottomListFragment
-import com.mrhiles.aos.fragments.BottomLoginFragment
-import com.mrhiles.aos.fragments.BottomProfileFragment
-import com.mrhiles.aos.fragments.BottomReservedFragment
+import com.mrhiles.aos.data.requestData
+import com.mrhiles.aos.data.responseData
+import com.mrhiles.aos.data.studyRoomFaovr
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -196,7 +194,6 @@ class ServiceRequest(
 
                         // 로그아웃 시 Home 메뉴로 이동
                         ma.fragmentLoad()
-
                     }
 
 // 간편 로그인 취소 처리 추가 부분
