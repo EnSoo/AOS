@@ -1,17 +1,13 @@
 package com.mrhiles.aos.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.google.android.material.bottomnavigation.BottomNavigationItemView
-import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.MainActivity
 import com.mrhiles.aos.databinding.FragmentBottomProfileBinding
-import com.mrhiles.aos.network.Service
+import com.mrhiles.aos.network.ServiceRequest
 
 class BottomProfileFragment : Fragment(){
     private val binding by lazy { FragmentBottomProfileBinding.inflate(layoutInflater) }
@@ -27,8 +23,8 @@ class BottomProfileFragment : Fragment(){
         super.onViewCreated(view, savedInstanceState)
         val ma: MainActivity = activity as MainActivity
         binding.logout.setOnClickListener{
-            val service=Service(requireContext(),"","")
-            service.logout()
+            val serviceRequest=ServiceRequest(requireContext(),"","")
+            serviceRequest.logout()
         }
     }
 }

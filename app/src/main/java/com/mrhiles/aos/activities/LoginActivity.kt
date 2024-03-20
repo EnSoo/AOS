@@ -10,10 +10,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
-import com.mrhiles.aos.G
 import com.mrhiles.aos.data.LoginResponse
 import com.mrhiles.aos.databinding.ActivityLoginBinding
-import com.mrhiles.aos.network.Login
+import com.mrhiles.aos.network.LoginProcess
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import retrofit2.Call
@@ -52,17 +51,17 @@ class LoginActivity : AppCompatActivity() {
     private fun clickEmail() {
         var email=binding.inputLayoutEmail.editText!!.text.toString()
         var password=binding.inputLayoutPassword.editText!!.text.toString()
-        val loginResult=Login(this,"email", "",email,password)
-        val call= loginResult.getCall()
+        val loginProcessResult=LoginProcess(this,"email", "",email,password)
+        val call= loginProcessResult.getCall()
         call.enqueue( object : Callback<LoginResponse>{
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                 if (response.isSuccessful) {
                     val s= response.body()
                     s ?: return
-                    loginResult.responseData=s
+                    loginProcessResult.responseData=s
 
-                    loginResult.setResult()
-                    val error=loginResult.responseData.error
+                    loginProcessResult.setResult()
+                    val error=loginProcessResult.responseData.error
                     Log.d("test","$error")
                     if(error != "400" ) {
                         if(error=="5200") {
@@ -105,17 +104,17 @@ class LoginActivity : AppCompatActivity() {
 
                 val accessToken:String? = NaverIdLoginSDK.getAccessToken()
                 accessToken ?: return
-                val loginResult=Login(this@LoginActivity,"naver", accessToken, "","")
-                val call= loginResult.getCall()
+                val loginProcessResult=LoginProcess(this@LoginActivity,"naver", accessToken, "","")
+                val call= loginProcessResult.getCall()
                 call.enqueue(object : Callback<LoginResponse> {
                     override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                         if (response.isSuccessful) {
                             val s= response.body()
                             s ?: return
-                            loginResult.responseData=s
+                            loginProcessResult.responseData=s
 
-                            loginResult.setResult()
-                            val error=loginResult.responseData.error
+                            loginProcessResult.setResult()
+                            val error=loginProcessResult.responseData.error
                             if(error != "400" ) {
                                 if(error=="5200") Toast.makeText(this@LoginActivity, "네이버 간편 로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
                                 else Toast.makeText(this@LoginActivity, " 네이버 간편 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
@@ -144,17 +143,17 @@ class LoginActivity : AppCompatActivity() {
 
                 val accessToken:String = token!!.accessToken
 
-                val loginResult=Login(this@LoginActivity,"kakao", accessToken, "","")
-                val call= loginResult.getCall()
+                val loginProcessResult=LoginProcess(this@LoginActivity,"kakao", accessToken, "","")
+                val call= loginProcessResult.getCall()
                 call.enqueue(object : Callback<LoginResponse> {
                     override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
                         if (response.isSuccessful) {
                             val s= response.body()
 
                             s ?: return
-                            loginResult.responseData=s
-                            loginResult.setResult()
-                            val error=loginResult.responseData.error
+                            loginProcessResult.responseData=s
+                            loginProcessResult.setResult()
+                            val error=loginProcessResult.responseData.error
                             if(error != "400" ) {
                                 if(error=="5200") Toast.makeText(this@LoginActivity, "카카오 간편 로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
                                 else Toast.makeText(this@LoginActivity, "${error}: 카카오 간편 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()

@@ -3,13 +3,11 @@ package com.mrhiles.aos.network
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
-import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import com.google.gson.Gson
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.LoginActivity
@@ -20,7 +18,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.net.URLEncoder
 
-class Service(
+class ServiceRequest(
     val context : Context,
     val serviceUrl : String,
     var params: Any
