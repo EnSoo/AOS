@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.google.gson.Gson
+import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.MainActivity
 import com.mrhiles.aos.activities.MapActivity
 import com.mrhiles.aos.adapter.TapHomeViewPagerAdapter
@@ -52,7 +53,5 @@ class BottomHomeFragment : Fragment(){
             intent.putExtra("type","list") // Type이 Item일 경우 1개만 검색
             requireContext().startActivity(intent)
         }
-
-
     }
 }

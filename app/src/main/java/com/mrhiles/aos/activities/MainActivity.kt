@@ -1,8 +1,10 @@
 package com.mrhiles.aos.activities
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
 import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
@@ -20,6 +22,8 @@ import com.mrhiles.aos.network.RetrofitService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import kotlin.concurrent.thread
+import kotlin.math.log
 
 class MainActivity : AppCompatActivity() {
     private val binding by lazy { ActivityMainBinding.inflate(layoutInflater) }
@@ -78,8 +82,7 @@ class MainActivity : AppCompatActivity() {
         })
     }
 
-    fun fragmentLoad() {
-        binding.bnv.selectedItemId= R.id.menu_bnv_home
+    fun fragmentLoad(login:Boolean=false) {
         binding.bnv.setOnItemSelectedListener {
             when(it.itemId) {
                 R.id.menu_bnv_home -> supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomHomeFragment()).commit()
@@ -95,5 +98,6 @@ class MainActivity : AppCompatActivity() {
             }
             true
         }
+        if(login!=true) binding.bnv.selectedItemId= R.id.menu_bnv_home
     }
 }

@@ -33,28 +33,21 @@ class BottomLoginFragment : BottomSheetDialogFragment() {
         binding.bnvAppleLogin.setOnClickListener {
             intent.putExtra("login_type","email")
             startActivity(intent)
-            val ma: MainActivity = context as MainActivity
-            ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
             dialog.dismiss()
-            ma.fragmentLoad()
+
         }
         // 네이버 클릭 시
         binding.bnvNaverLogin.setOnClickListener {
             intent.putExtra("login_type","naver")
             startActivity(intent)
-            val ma: MainActivity = context as MainActivity
-            ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
             dialog.dismiss()
-            ma.fragmentLoad()
+
         }
         // 카카오 클릭 시
         binding.bnvKakaoLogin.setOnClickListener {
             intent.putExtra("login_type","kakao")
             startActivity(intent)
-            val ma: MainActivity = context as MainActivity
-            ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
             dialog.dismiss()
-            ma.fragmentLoad()
         }
 
     }
@@ -67,5 +60,9 @@ class BottomLoginFragment : BottomSheetDialogFragment() {
         return dialog
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        (context as MainActivity).fragmentLoad(true)
+    }
 
 }
