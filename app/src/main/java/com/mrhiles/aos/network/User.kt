@@ -20,7 +20,7 @@ data class studyRoomFaovr (
 
 // 1.2 lecture 개설
 data class Lecture (
-    val search_location:String="",      // 지역
+    val search_location:String="",      // 검색 지역
     val search_string:String="",        // 검색어
     val lecture_id:String="",           // 강의 id
     val title:String="",                // 강의 제목
@@ -28,8 +28,9 @@ data class Lecture (
     val start_date:String="",           // 강의 시작 날짜
     val end_date:String="",             // 강의 종료 날짜
     val studyroom_id:String="",         // 스터디룸 id
-    val place_name:String="",           // 스터디룸 장소명
-    val place_nickname:String="",       // 스터디룸 별명
+    val location:String="",             // 강의 지역
+    val place_name:String="",           // 강의 장소명
+    val place_nickname:String="",       // 강의 별명
     val join_max:String="",             // 최대인원
     val join_min:String="",             // 최소인원
     val join_num:String="",             // 참여자수
