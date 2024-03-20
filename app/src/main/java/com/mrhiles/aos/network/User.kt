@@ -36,6 +36,7 @@ data class Lecture (
     val page:String="",                 // 페이지 번호. 목록(load) 시 필요
     var type:String                     // 삭제(remove), 생성(add), 목록(load), 수정(modify), 마감(deadline)
                                         // 학생 목록(studentlist), 학생 참여(studentjoin), 학생 참여제외(withdraw)
+                                        // 검색(search)
 )
 
 // 2. responseData params 데이터 리스트

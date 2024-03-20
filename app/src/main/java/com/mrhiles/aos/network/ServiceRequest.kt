@@ -118,6 +118,7 @@ class ServiceRequest(
         if(code == "200") {
             when(serviceUrl) { // 서비스에 따라 파싱이 필요
                 "/user/favor.php" -> favorProcess(processObject as ImageView)
+                "/user/lecture.php" -> lectureProcess()
             }
         } else {
             Toast.makeText(context, "오류가 있어 처리 되지 못했습니다.", Toast.LENGTH_SHORT).show()
@@ -154,6 +155,10 @@ class ServiceRequest(
                         "'${it.x}','${it.y}','${it.place_url}')")
             }
         }
+    }
+
+    private fun lectureProcess() {
+
     }
 
 // ---------- 서비스 처리 부분 end ----------
