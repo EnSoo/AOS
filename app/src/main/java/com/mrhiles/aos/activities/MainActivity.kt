@@ -35,21 +35,7 @@ class MainActivity : AppCompatActivity() {
         //Log.d("keyHash",keyHash)
 
         //BottomNavigation 각 4개 메뉴 클릭 시 Fragment 붙이기
-        binding.bnv.setOnItemSelectedListener {
-            when(it.itemId) {
-                R.id.menu_bnv_home -> supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomHomeFragment()).commit()
-                R.id.menu_bnv_list -> supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomListFragment()).commit()
-                R.id.menu_bnv_reserved -> {
-                    if(!G.isLogin) BottomLoginFragment().show(supportFragmentManager,"bnv_favor")
-                    else supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomReservedFragment()).commit()
-                }
-                R.id.menu_bnv_profile -> {
-                    if(!G.isLogin) BottomLoginFragment().show(supportFragmentManager,"bnv_profile")
-                    else supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomProfileFragment()).commit()
-                }
-            }
-            true
-        }
+        fragmentLoad()
 
         //BottomFloating 버튼
         binding.fabChat.setOnClickListener {
@@ -90,5 +76,24 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+    }
+
+    fun fragmentLoad() {
+        binding.bnv.selectedItemId= R.id.menu_bnv_home
+        binding.bnv.setOnItemSelectedListener {
+            when(it.itemId) {
+                R.id.menu_bnv_home -> supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomHomeFragment()).commit()
+                R.id.menu_bnv_list -> supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomListFragment()).commit()
+                R.id.menu_bnv_reserved -> {
+                    if(!G.isLogin) BottomLoginFragment().show(supportFragmentManager,"bnv_favor")
+                    else supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomReservedFragment()).commit()
+                }
+                R.id.menu_bnv_profile -> {
+                    if(!G.isLogin) BottomLoginFragment().show(supportFragmentManager,"bnv_profile")
+                    else supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomProfileFragment()).commit()
+                }
+            }
+            true
+        }
     }
 }

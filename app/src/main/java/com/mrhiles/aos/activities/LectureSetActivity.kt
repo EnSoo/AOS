@@ -12,6 +12,8 @@ class LectureSetActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-
+        // 뒤로가기 버튼 및 취소 버튼 클릭 시 액티비티 종료
+        binding.arrowBack.setOnClickListener { finish() }
+        binding.btnCancel.setOnClickListener { finish() }
     }
 }

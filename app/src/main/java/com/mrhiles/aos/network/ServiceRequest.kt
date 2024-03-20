@@ -14,6 +14,11 @@ import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.LoginActivity
 import com.mrhiles.aos.activities.MainActivity
 import com.mrhiles.aos.data.UserInfo
+import com.mrhiles.aos.fragments.BottomHomeFragment
+import com.mrhiles.aos.fragments.BottomListFragment
+import com.mrhiles.aos.fragments.BottomLoginFragment
+import com.mrhiles.aos.fragments.BottomProfileFragment
+import com.mrhiles.aos.fragments.BottomReservedFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -99,7 +104,6 @@ class ServiceRequest(
 
                 override fun onFailure(call: Call<responseData>, t: Throwable) {
                     Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
-                    Log.d("t.message","${t.message}")
 
                 }
             })
@@ -174,7 +178,6 @@ class ServiceRequest(
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
                     val error=response.body()
-                    Log.d("logout errorlog","{$error}")
                     error ?: return
                     val ma: MainActivity = context as MainActivity
                     if(error =="7201") {
@@ -191,7 +194,9 @@ class ServiceRequest(
                         //sqllite 초기화
                         initSqlLite()
 
-                        ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
+                        // 로그아웃 시 Home 메뉴로 이동
+                        ma.fragmentLoad()
+
                     }
 
 // 간편 로그인 취소 처리 추가 부분

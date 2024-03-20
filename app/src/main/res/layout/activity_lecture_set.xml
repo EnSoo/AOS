@@ -21,7 +21,7 @@
                 android:gravity="center_vertical"
                 android:background="@drawable/rectangle_input_bnv">
                 <ImageView
-                    android:id="@+id/cancel_button"
+                    android:id="@+id/arrow_back"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
@@ -53,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="24dp"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="visible">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -81,7 +81,7 @@
                     android:layout_marginBottom="24dp"
                     android:layout_below="@+id/layout_title"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="visible">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -108,7 +108,7 @@
                     android:layout_marginBottom="24dp"
                     android:layout_below="@+id/layout_introduction"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="visible">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -174,7 +174,7 @@
                     android:layout_marginBottom="24dp"
                     android:layout_below="@+id/layout_date"
                     android:orientation="vertical"
-                    android:visibility="gone">
+                    android:visibility="visible">
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -341,8 +341,34 @@
                     android:background="@color/gray"/>
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-                    <!-- 취소, 완료 버튼 작성 필요 -->
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_below="@id/layout_line">
+                    <Button
+                        android:id="@+id/btn_cancel"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+
+                        android:layout_marginRight="20dp"
+                        android:layout_marginTop="40dp"
+                        android:backgroundTint="@color/gray"
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:padding="16dp"
+                        android:text="취소"
+                        android:textAllCaps="false"/>
+                    <Button
+                        android:id="@+id/btn_submit"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginLeft="20dp"
+                        android:layout_marginTop="40dp"
+                        android:backgroundTint="#FFAFD485"
+                        style="@style/Widget.MaterialComponents.Button"
+                        android:padding="16dp"
+                        android:text="완료"
+                        android:textAllCaps="false"/>
                 </LinearLayout>
             </RelativeLayout>
         </ScrollView>

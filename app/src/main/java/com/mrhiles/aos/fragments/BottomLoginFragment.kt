@@ -36,6 +36,7 @@ class BottomLoginFragment : BottomSheetDialogFragment() {
             val ma: MainActivity = context as MainActivity
             ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
             dialog.dismiss()
+            ma.fragmentLoad()
         }
         // 네이버 클릭 시
         binding.bnvNaverLogin.setOnClickListener {
@@ -44,6 +45,7 @@ class BottomLoginFragment : BottomSheetDialogFragment() {
             val ma: MainActivity = context as MainActivity
             ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
             dialog.dismiss()
+            ma.fragmentLoad()
         }
         // 카카오 클릭 시
         binding.bnvKakaoLogin.setOnClickListener {
@@ -52,6 +54,7 @@ class BottomLoginFragment : BottomSheetDialogFragment() {
             val ma: MainActivity = context as MainActivity
             ma.findViewById<BottomNavigationView>(R.id.bnv).selectedItemId= R.id.menu_bnv_home
             dialog.dismiss()
+            ma.fragmentLoad()
         }
 
     }
@@ -62,7 +65,7 @@ class BottomLoginFragment : BottomSheetDialogFragment() {
         // 둘러보기 클릭 시
         binding.bnvTour.setOnClickListener{ dialog.dismiss() }
         return dialog
-
     }
+
 
 }
