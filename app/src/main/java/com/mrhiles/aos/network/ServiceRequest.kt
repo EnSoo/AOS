@@ -65,6 +65,7 @@ class ServiceRequest(
 
 
     fun serviceRequest(processObject :Any) {
+
         if(G.isLogin) { // 로그인 상태 경우만 실행
             getToken()
             val retrofitService = setRetrofitService()
@@ -76,10 +77,8 @@ class ServiceRequest(
                     call: Call<responseData>,
                     response: Response<responseData>
                 ) {
-                    Log.d("s","${response}")
                     if (response.isSuccessful) {
                         val s = response.body()
-
                         s ?: return
                         error = s.error
                         code = s.code
@@ -100,6 +99,7 @@ class ServiceRequest(
 
                 override fun onFailure(call: Call<responseData>, t: Throwable) {
                     Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
+                    Log.d("t.message","${t.message}")
 
                 }
             })
@@ -117,7 +117,7 @@ class ServiceRequest(
     private fun serviceProcess(processObject:Any) {
         if(code == "200") {
             when(serviceUrl) { // 서비스에 따라 파싱이 필요
-                "/user/favor.php" -> favorProcess(processObject as ImageView)
+                "/user/favor.php" -> favorProcess(processObject)
                 "/user/lecture.php" -> lectureProcess()
             }
         } else {
@@ -125,7 +125,7 @@ class ServiceRequest(
         }
     }
 
-    private fun favorProcess(imageView:ImageView) {
+    private fun favorProcess(processObject:Any) {
         // 성공만 있으면 되므로...
 
         //sqllite 작업 시작
@@ -136,13 +136,13 @@ class ServiceRequest(
         db.execSQL("CREATE TABLE IF NOT EXISTS favor(id TEXT PRIMARY KEY, place_name TEXT, category_name TEXT, phone TEXT, address_name TEXT, x TEXT, y TEXT, place_url TEXT)")
         val param=params as studyRoomFaovr
         if(param.type=="remove") { // favor 삭제 기능일 경우
-            imageView.setImageResource(R.drawable.ic_favor_border)
+            (processObject as ImageView).setImageResource(R.drawable.ic_favor_border)
             param.apply {
                 db.execSQL("DELETE FROM favor WHERE id=?", arrayOf(id))
             }
             Toast.makeText(context, "찜을 삭제 했습니다.", Toast.LENGTH_SHORT).show()
         } else if (param.type=="add"){ // favor 추가 기능일 경우
-            imageView.setImageResource(R.drawable.ic_favor_full)
+            (processObject as ImageView).setImageResource(R.drawable.ic_favor_full)
 
             param.apply {
                 db.execSQL("INSERT INTO favor VALUES('$id','$place_name','$category_name','$phone','$address_name','$x','$y','$place_url')")
@@ -174,7 +174,7 @@ class ServiceRequest(
             override fun onResponse(call: Call<String>, response: Response<String>) {
                 if (response.isSuccessful) {
                     val error=response.body()
-
+                    Log.d("logout errorlog","{$error}")
                     error ?: return
                     val ma: MainActivity = context as MainActivity
                     if(error =="7201") {
@@ -227,7 +227,7 @@ class ServiceRequest(
 
     private fun initSqlLite() {
         db= ContextWrapper(context).openOrCreateDatabase("study", Context.MODE_PRIVATE,null)
-        db.execSQL("DELETE FROM favor", null)
+        db.execSQL("DELETE FROM favor")
     }
 
 // ---------- 로그아웃 후 처리 부분 end ----------
