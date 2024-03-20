@@ -1,5 +1,6 @@
 package com.mrhiles.aos.fragments
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +9,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import com.mrhiles.aos.databinding.FragmentBottomListBinding
 import com.mrhiles.aos.R
+import com.mrhiles.aos.activities.LectureSetActivity
 import com.mrhiles.aos.adapter.LectureListRecyclerAdapter
 import com.mrhiles.aos.data.LectureInfo
 
@@ -51,5 +53,13 @@ class BottomListFragment : Fragment(){
             "안녕하세요 혜화 면접스터디 하실분 구합니다! 당장 면접을 위한 단기ddd",
             "3월 15일","오후6시","서울 종로구","3","9","2"))
         binding.listRecycler.adapter=LectureListRecyclerAdapter(requireContext(),lecture)
+
+        binding.addLecture.setOnClickListener {
+            //lecture 페이지로 이동
+            val intent= Intent(context, LectureSetActivity::class.java)
+
+            intent.putExtra("type","add") // Type이 Item일 경우 1개만 검색
+            requireContext().startActivity(intent)
+        }
     }
 }
