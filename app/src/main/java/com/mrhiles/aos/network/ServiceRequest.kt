@@ -24,6 +24,7 @@ class ServiceRequest(
     val serviceUrl : String,
     var params: Any
 ) {
+// --- 초기화 부분 ---
     private lateinit var error:String
     private lateinit var code:String
     private lateinit var responseData:String
@@ -40,6 +41,28 @@ class ServiceRequest(
         val retrofitService=retrofit.create(RetrofitService::class.java)
         return retrofitService
     }
+
+    fun getAccessToken() {
+        val retrofitService=setRetrofitService()
+        val call=retrofitService.tokenGenrate(URLEncoder.encode(refreshToken, "UTF-8"),"refresh_token")
+        call.enqueue(object : Callback<UserCheck>{
+            override fun onResponse(call: Call<UserCheck>, response: Response<UserCheck>) {
+                if (response.isSuccessful) {
+                    val s= response.body()
+                    s ?: return
+                    error=s.error
+                    accessToken=s.access_token
+                }
+            }
+
+            override fun onFailure(call: Call<UserCheck>, t: Throwable) {
+                Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
+// ---------- 초기화 부분 end ----------
+
 
     fun serviceRequest(processObject :Any) {
         if(G.isLogin) { // 로그인 상태 경우만 실행
@@ -88,7 +111,9 @@ class ServiceRequest(
         }
     }
 
-// 서비스별로 멘트를 다르게 처리해야 함
+
+
+// ---------- 서비스 처리 부분 ----------
     private fun serviceProcess(processObject:Any) {
         if(code == "200") {
             when(serviceUrl) { // 서비스에 따라 파싱이 필요
@@ -131,7 +156,11 @@ class ServiceRequest(
         }
     }
 
-// 로그아웃. 네이버, 카카오 등 브라우저 로그인을 취소해야 함
+// ---------- 서비스 처리 부분 end ----------
+
+
+
+// ---------- 로그아웃 후 처리 부분 ----------
     fun logout() {
         getToken()
         val retrofitService=setRetrofitService()
@@ -196,22 +225,5 @@ class ServiceRequest(
         db.execSQL("DELETE FROM favor", null)
     }
 
-    fun getAccessToken() {
-        val retrofitService=setRetrofitService()
-        val call=retrofitService.tokenGenrate(URLEncoder.encode(refreshToken, "UTF-8"),"refresh_token")
-        call.enqueue(object : Callback<UserCheck>{
-            override fun onResponse(call: Call<UserCheck>, response: Response<UserCheck>) {
-                if (response.isSuccessful) {
-                    val s= response.body()
-                    s ?: return
-                    error=s.error
-                    accessToken=s.access_token
-                }
-            }
-
-            override fun onFailure(call: Call<UserCheck>, t: Throwable) {
-                Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
+// ---------- 로그아웃 후 처리 부분 end ----------
 }
