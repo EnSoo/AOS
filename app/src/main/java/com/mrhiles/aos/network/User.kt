@@ -20,6 +20,8 @@ data class studyRoomFaovr (
 
 // 1.2 lecture 개설
 data class Lecture (
+    val search_location:String="",      // 지역
+    val search_string:String="",        // 검색어
     val lecture_id:String="",           // 강의 id
     val title:String="",                // 강의 제목
     val introduction:String="",         // 강의 내용
