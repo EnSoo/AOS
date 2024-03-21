@@ -26,5 +26,6 @@ class BottomChatFragment : Fragment(){
         // 채팅목록 불러오기
         chatLists.add(ChatRoom(1,"https://ssl.pstatic.net/melona/libs/1412/1412850/974b452fd3acdd6f6d79_20240229170447847.png","사용자 이름1, 사용자 이름2","메시지","오후 2:39",1))
         binding.chatRecycler.adapter=ChatListRecyclerAdapter(requireContext(),chatLists)
+
     }
 }

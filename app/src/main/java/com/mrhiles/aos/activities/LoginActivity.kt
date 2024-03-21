@@ -61,11 +61,11 @@ class LoginActivity : AppCompatActivity() {
                     s ?: return
                     loginProcessResult.responseData=s
 
-                    loginProcessResult.setResult()
                     val error=loginProcessResult.responseData.error
                     if(error != "400" ) {
                         if(error=="5200") {
                             Toast.makeText(this@LoginActivity, "이메일 로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                            loginProcessResult.setResult()
                             favorLoad()
                         }
                         else Toast.makeText(this@LoginActivity, "이메일 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
@@ -114,11 +114,11 @@ class LoginActivity : AppCompatActivity() {
                             s ?: return
                             loginProcessResult.responseData=s
 
-                            loginProcessResult.setResult()
                             val error=loginProcessResult.responseData.error
                             if(error != "400" ) {
                                 if(error=="5200") {
                                     Toast.makeText(this@LoginActivity, "네이버 간편 로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                    loginProcessResult.setResult()
                                     favorLoad()
                                 }
                                 else Toast.makeText(this@LoginActivity, " 네이버 간편 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()
@@ -156,11 +156,11 @@ class LoginActivity : AppCompatActivity() {
 
                             s ?: return
                             loginProcessResult.responseData=s
-                            loginProcessResult.setResult()
                             val error=loginProcessResult.responseData.error
                             if(error != "400" ) {
                                 if(error=="5200") {
                                     Toast.makeText(this@LoginActivity, "카카오 간편 로그인에 성공하였습니다.", Toast.LENGTH_SHORT).show()
+                                    loginProcessResult.setResult()
                                     favorLoad()
                                 }
                                 else Toast.makeText(this@LoginActivity, "${error}: 카카오 간편 로그인에 실패하였습니다.", Toast.LENGTH_SHORT).show()

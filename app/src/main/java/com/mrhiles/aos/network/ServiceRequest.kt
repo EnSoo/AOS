@@ -170,7 +170,7 @@ class ServiceRequest(
             (processObject as LectureSetActivity).finish()
         } else if(param.type == "remove") {
             Toast.makeText(context, "강의 삭제가 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
-        } else if(param.type == "load") {
+        } else if(param.type == "load" || param.type == "search") {
             val lectureList=Gson().fromJson(responseData, Array<ResponseLecture>::class.java)
             lectureList?: return
             var binding=(processObject as FragmentBottomListBinding)
@@ -184,8 +184,6 @@ class ServiceRequest(
             Toast.makeText(context, "강의 신청이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
         } else if(param.type == "withdraw") {
             Toast.makeText(context, "강의 신청 취소가 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
-        } else if(param.type == "search") {
-            // 검색
         }
 
     }

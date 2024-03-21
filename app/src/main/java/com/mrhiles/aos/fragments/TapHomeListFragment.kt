@@ -24,5 +24,6 @@ class TapHomeListFragment : Fragment(){
         val ma:MainActivity = activity as MainActivity
         ma.searchStudyRoomResponse ?: return // null일 경우 서버로딩이 완료되지 않았을 수도 있어서 리턴
         binding.homeRecycler.adapter = StudyRoomTapHomeListRecyclerAdapter(requireContext(), ma.searchStudyRoomResponse!!.documents)
+        binding.homeRecycler.adapter!!.notifyDataSetChanged()
     }
 }

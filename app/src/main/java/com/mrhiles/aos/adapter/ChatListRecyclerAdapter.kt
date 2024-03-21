@@ -3,6 +3,7 @@ package com.mrhiles.aos.adapter
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.bumptech.glide.Glide
@@ -21,7 +22,7 @@ class ChatListRecyclerAdapter(val context:Context, val chatLists:List<ChatRoom>)
         holder.binding.tvLastTime.text=chatRoom.lastTime
 
         holder.binding.root.setOnClickListener {
-
+            Toast.makeText(context, "채팅방입니다.", Toast.LENGTH_SHORT).show()
         }
     }
 }
