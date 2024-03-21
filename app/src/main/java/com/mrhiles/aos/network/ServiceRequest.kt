@@ -167,8 +167,10 @@ class ServiceRequest(
         val param=params as Lecture
         if(param.type == "add") {
             Toast.makeText(context, "강의 생성이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
+            (processObject as LectureSetActivity).finish()
         } else if(param.type == "modify") {
             Toast.makeText(context, "강의 수정이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
+            (processObject as LectureSetActivity).finish()
         } else if(param.type == "remove") {
             Toast.makeText(context, "강의 삭제가 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
         } else if(param.type == "load") {
@@ -184,7 +186,7 @@ class ServiceRequest(
         } else if(param.type == "search") {
             // 검색
         }
-        (processObject as LectureSetActivity).finish()
+
     }
 
 // ---------- 서비스 처리 부분 end ----------
