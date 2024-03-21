@@ -27,6 +27,7 @@
                     android:layout_marginRight="10dp"
                     android:src="@drawable/ic_arrow_back"/>
                 <TextView
+                    android:id="@+id/activity_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="강의 생성"
@@ -189,7 +190,19 @@
                         android:layout_marginBottom="12dp"
                         android:text="장소" />
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/input_search_location"
+                        android:id="@+id/input_studyroom_id"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        android:hint="스터디룸 id">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:inputType="none"
+                            android:focusableInTouchMode="false"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/input_location"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="4dp"
@@ -197,7 +210,8 @@
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
-                            android:inputType="text"
+                            android:inputType="none"
+                            android:focusableInTouchMode="false"
                             android:textSize="12sp"
                             android:textColor="@color/black"/>
                     </com.google.android.material.textfield.TextInputLayout>
@@ -209,7 +223,8 @@
                         <com.google.android.material.textfield.TextInputEditText
                             android:layout_width="match_parent"
                             android:layout_height="48dp"
-                            android:inputType="text"
+                            android:inputType="none"
+                            android:focusableInTouchMode="false"
                             android:textSize="12sp"
                             android:textColor="@color/black"/>
                     </com.google.android.material.textfield.TextInputLayout>

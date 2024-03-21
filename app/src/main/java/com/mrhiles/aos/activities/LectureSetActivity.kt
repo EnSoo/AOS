@@ -1,9 +1,11 @@
 package com.mrhiles.aos.activities
 
 import android.app.DatePickerDialog
+import android.content.Intent
 import android.os.Bundle
 import android.widget.EditText
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isEmpty
 import com.google.android.material.textfield.TextInputEditText
@@ -12,6 +14,8 @@ import com.mrhiles.aos.data.Lecture
 import com.mrhiles.aos.data.studyRoomFaovr
 import com.mrhiles.aos.databinding.ActivityLectureSetBinding
 import com.mrhiles.aos.network.ServiceRequest
+import java.text.SimpleDateFormat
+import java.util.Calendar
 
 
 // 강의 생성, 수정
@@ -21,27 +25,60 @@ class LectureSetActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        val type=intent.getStringExtra("type")
+
+        // 액티비티 제목
+        if(type=="add") {
+            binding.activityName.text="강의 생성"
+        } else if(type=="modify") {
+            binding.activityName.text="강의 수정"
+        }
+
+
         //시작일, 종료일 누를 경우 달력 표시
         binding.inputStartDate.editText?.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this)
             datePickerDialog.setOnDateSetListener { view, year, month, dayOfMonth ->
-                binding.inputStartDate.editText?.setText("$year-$month-$dayOfMonth")
+                val selectedDate= Calendar.getInstance()
+                selectedDate.set(year, month, dayOfMonth)
+
+                val format= SimpleDateFormat("yyyy-MM-dd")
+                val formattedDate=format.format(selectedDate.time)
+                binding.inputStartDate.editText?.setText(formattedDate)
             }
             datePickerDialog.show()
         }
         binding.inputEndDate.editText?.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this)
             datePickerDialog.setOnDateSetListener { view, year, month, dayOfMonth ->
-                binding.inputEndDate.editText?.setText("$year-$month-$dayOfMonth")
+                val selectedDate= Calendar.getInstance()
+                selectedDate.set(year, month, dayOfMonth)
+
+                val format= SimpleDateFormat("yyyy-MM-dd")
+                val formattedDate=format.format(selectedDate.time)
+                binding.inputEndDate.editText?.setText(formattedDate)
             }
             datePickerDialog.show()
+        }
+
+        // 위치, 장소 에디트 클릭 시 MapActivity 동작
+        binding.inputLocation.editText?.setOnClickListener {
+            val intent = Intent(this, MapActivity::class.java)
+            intent.putExtra("type","lecture")
+            resultLauncher.launch(intent)
+        }
+        binding.inputPlaceName.editText?.setOnClickListener {
+            // NaverMapActivity로 이동
+            val intent = Intent(this, MapActivity::class.java)
+            intent.putExtra("type","lecture")
+            resultLauncher.launch(intent)
         }
 
         // 뒤로가기 버튼 및 취소 버튼 클릭 시 액티비티 종료
         binding.arrowBack.setOnClickListener { finish() }
         binding.btnCancel.setOnClickListener { finish() }
         binding.btnSubmit.setOnClickListener {
-            val type=intent.getStringExtra("type")
+
 
             val textInputLayoutList:MutableMap<String,TextInputLayout> = mutableMapOf()
 
@@ -49,7 +86,8 @@ class LectureSetActivity : AppCompatActivity() {
             val introductionInputLayout=binding.inputIntroduction
             val startDateInputLayout=binding.inputStartDate
             val endDateInputLayout=binding.inputEndDate
-            val searchLocationInputLayout=binding.inputSearchLocation
+            val studyroomIdInputLayout=binding.inputStudyroomId
+            val locationInputLayout=binding.inputLocation
             val placeNameInputLayout=binding.inputPlaceName
             val joinMaxLayout=binding.inputJoinMax
             val joinMinInputLayout=binding.inputJoinMin
@@ -59,7 +97,8 @@ class LectureSetActivity : AppCompatActivity() {
             textInputLayoutList["introduction"]=introductionInputLayout
             textInputLayoutList["startDate"]=startDateInputLayout
             textInputLayoutList["endDate"]=endDateInputLayout
-            textInputLayoutList["searchLocation"]=searchLocationInputLayout
+            textInputLayoutList["studyroom_id"]=studyroomIdInputLayout
+            textInputLayoutList["location"]=locationInputLayout
             textInputLayoutList["placeName"]=placeNameInputLayout
             textInputLayoutList["joinMax"]=joinMaxLayout
             textInputLayoutList["joinMin"]=joinMinInputLayout
@@ -74,12 +113,18 @@ class LectureSetActivity : AppCompatActivity() {
 
     private fun lectureProcess(textInputLayoutList:MutableMap<String,TextInputLayout>, type:String) {
         textInputLayoutList.also {tl ->
+            var lectureId=""
+            if(type=="modify") {
+                lectureId=intent.getStringExtra("lecture_id")!!
+            }
             val lecture= Lecture(
+                lecture_id = lectureId,
                 title= tl["title"]!!.editText!!.text.toString(),
                 introduction = tl["introduction"]!!.editText!!.text.toString(),
                 start_date = tl["startDate"]!!.editText!!.text.toString(),
                 end_date = tl["endDate"]!!.editText!!.text.toString(),
-                search_location = tl["searchLocation"]!!.editText!!.text.toString(),
+                studyroom_id = tl["studyroom_id"]!!.editText!!.text.toString(),
+                location = tl["location"]!!.editText!!.text.toString(),
                 place_name = tl["placeName"]!!.editText!!.text.toString(),
                 join_max = tl["joinMax"]!!.editText!!.text.toString(),
                 join_min = tl["joinMin"]!!.editText!!.text.toString(),
@@ -88,7 +133,7 @@ class LectureSetActivity : AppCompatActivity() {
                 type=type
             )
             val serviceRequest= ServiceRequest(this,"/user/lecture.php",lecture)
-            serviceRequest.serviceRequest("")
+            serviceRequest.serviceRequest(this)
         }
     }
 
@@ -104,4 +149,23 @@ class LectureSetActivity : AppCompatActivity() {
         }
         return true
     }
+
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(),{result ->
+        if(result.resultCode == RESULT_OK){
+            val intent=result.data
+            val location=intent?.getStringExtra("location")
+            val place_name=intent?.getStringExtra("place_name")
+            val studyroom_id=intent?.getStringExtra("studyroom_id")
+
+            val studyroomIdInputEditText=binding.inputStudyroomId.editText
+            val locationInputEditText=binding.inputLocation.editText
+            val placeNameInputEditText=binding.inputPlaceName.editText
+            locationInputEditText?.setText(location)
+            placeNameInputEditText?.setText(place_name)
+            studyroomIdInputEditText?.setText(studyroom_id)
+
+        } else {
+            Toast.makeText(this, "위치 선택을 취소 했습니다.", Toast.LENGTH_SHORT).show();
+        }
+    })
 }

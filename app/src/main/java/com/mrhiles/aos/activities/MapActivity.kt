@@ -7,10 +7,12 @@ import android.location.Location
 import android.os.Bundle
 import android.os.Looper
 import android.widget.ArrayAdapter
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -24,6 +26,7 @@ import com.mrhiles.aos.R
 import com.mrhiles.aos.data.KakaoSearchStudyRoomRespnose
 import com.mrhiles.aos.data.StudyRoom
 import com.mrhiles.aos.databinding.ActivityMapBinding
+import com.mrhiles.aos.databinding.DialogMarkerClickMapBinding
 import com.mrhiles.aos.network.RetrofitHelper
 import com.mrhiles.aos.network.RetrofitService
 import com.naver.maps.geometry.LatLng
@@ -133,7 +136,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // 초기 맵 지도에서 마커 설정 및 카메라 이동
         setMarker()
-        studyRooms.get(0).apply { setCameraMove(LatLng(y.toDouble(),x.toDouble())) }
+        if(type!="lecture") studyRooms.get(0).apply { setCameraMove(LatLng(y.toDouble(),x.toDouble())) }
     }
 
     private fun dropDownSetting() {
@@ -273,13 +276,18 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
 
             // 마커 클릭 시
             val listener = Overlay.OnClickListener { overlay ->
-                val marker=overlay as Marker
-                if (marker.infoWindow == null) {
-                    // 현재 마커에 정보 창이 열려있지 않을 경우 엶
-                    infoWindow.open(marker)
+                val type=intent.getStringExtra("type")
+                if(type=="lecture") {
+                    dialog(studyRoom)
                 } else {
-                    // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
-                    infoWindow.close()
+                    val marker=overlay as Marker
+                    if (marker.infoWindow == null) {
+                        // 현재 마커에 정보 창이 열려있지 않을 경우 엶
+                        infoWindow.open(marker)
+                    } else {
+                        // 이미 현재 마커에 정보 창이 열려있을 경우 닫음
+                        infoWindow.close()
+                    }
                 }
                 true
             }
@@ -340,5 +348,32 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
             // 내 위치를 기준으로 장소 검색
             getStudyRooms("myLocationSearch")
         }
+    }
+
+    private fun dialog(studyRoom: StudyRoom) {
+        val location=studyRoom.address_name
+        val phone=studyRoom.phone
+        val place_name=studyRoom.place_name
+        val studyroom_id=studyRoom.id
+
+        val dialog=AlertDialog.Builder(this).setTitle("강의 장소 선택")
+            .setView(R.layout.dialog_marker_click_map).create()
+
+        dialog.show()
+
+        // 텍스트 설정
+        dialog.findViewById<TextView>(R.id.dialog_location)?.setText(location)
+        dialog.findViewById<TextView>(R.id.dialog_place_name)?.setText(place_name)
+        dialog.findViewById<TextView>(R.id.dialog_phone)?.setText(phone)
+
+        dialog.findViewById<Button>(R.id.btn_confirm)?.setOnClickListener {
+            val intent = Intent()
+            intent.putExtra("location", location)
+            intent.putExtra("place_name", place_name)
+            intent.putExtra("studyroom_id", studyroom_id)
+            setResult(RESULT_OK, intent)
+            finish()
+        }
+        dialog.findViewById<Button>(R.id.btn_cancel)?.setOnClickListener { dialog.dismiss() }
     }
 }

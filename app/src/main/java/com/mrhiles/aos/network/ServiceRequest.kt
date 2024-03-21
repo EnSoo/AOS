@@ -4,13 +4,16 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import com.google.gson.Gson
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
+import com.mrhiles.aos.activities.LectureSetActivity
 import com.mrhiles.aos.activities.LoginActivity
 import com.mrhiles.aos.activities.MainActivity
+import com.mrhiles.aos.data.Lecture
 import com.mrhiles.aos.data.LoadStudyRoomFaovr
 import com.mrhiles.aos.data.UserCheck
 import com.mrhiles.aos.data.UserInfo
@@ -80,8 +83,10 @@ class ServiceRequest(
                     call: Call<responseData>,
                     response: Response<responseData>
                 ) {
+                    Log.d("response","${response}")
                     if (response.isSuccessful) {
                         val s = response.body()
+                        Log.d("s","${s}")
                         s ?: return
                         error = s.error
                         code = s.code
@@ -120,7 +125,7 @@ class ServiceRequest(
         if(code == "200") {
             when(serviceUrl) { // 서비스에 따라 파싱이 필요
                 "/user/favor.php" -> favorProcess(processObject)
-                "/user/lecture.php" -> lectureProcess()
+                "/user/lecture.php" -> lectureProcess(processObject)
             }
         } else {
             Toast.makeText(context, "오류가 있어 처리 되지 못했습니다.", Toast.LENGTH_SHORT).show()
@@ -128,7 +133,6 @@ class ServiceRequest(
     }
 
     private fun favorProcess(processObject:Any) {
-        // 성공만 있으면 되므로...
 
         //sqllite 작업 시작
         // "study.db"라는 이름으로 데이터베이스 파일을 만들거나 열어서 참조하기
@@ -159,8 +163,28 @@ class ServiceRequest(
         }
     }
 
-    private fun lectureProcess() {
-
+    private fun lectureProcess(processObject:Any) {
+        val param=params as Lecture
+        if(param.type == "add") {
+            Toast.makeText(context, "강의 생성이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
+        } else if(param.type == "modify") {
+            Toast.makeText(context, "강의 수정이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
+        } else if(param.type == "remove") {
+            Toast.makeText(context, "강의 삭제가 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
+        } else if(param.type == "load") {
+            // 강의 목록
+        } else if(param.type == "deadline") {
+            Toast.makeText(context, "강의 마감이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
+        } else if(param.type == "studentlist") {
+            // 강의 생성자가 참여한 학생 리스트를 볼 경우
+        } else if(param.type == "studentjoin") {
+            Toast.makeText(context, "강의 신청이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
+        } else if(param.type == "withdraw") {
+            Toast.makeText(context, "강의 신청 취소가 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
+        } else if(param.type == "search") {
+            // 검색
+        }
+        (processObject as LectureSetActivity).finish()
     }
 
 // ---------- 서비스 처리 부분 end ----------

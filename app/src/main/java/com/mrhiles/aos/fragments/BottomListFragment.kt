@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import com.mrhiles.aos.G
 import com.mrhiles.aos.databinding.FragmentBottomListBinding
 import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.LectureSetActivity
@@ -28,7 +29,8 @@ class BottomListFragment : Fragment(){
         val regionArray= resources.getStringArray(R.array.lecture_location_list)
         val arrayAdapter=ArrayAdapter<String>(requireContext(),R.layout.lecture_dropdown_item, regionArray)
         binding.dropdownMenu.setAdapter(arrayAdapter)
-
+        if(G.isLogin) binding.editLecture.visibility=View.VISIBLE
+        else binding.editLecture.visibility=View.INVISIBLE
         val lecture:MutableList<LectureInfo> = mutableListOf()
         // 예시 강의 데이터
         lecture.add(LectureInfo("혜화) 24 상반기 면접스터디 모집합니다",
@@ -54,7 +56,7 @@ class BottomListFragment : Fragment(){
             "3월 15일","오후6시","서울 종로구","3","9","2"))
         binding.listRecycler.adapter=LectureListRecyclerAdapter(requireContext(),lecture)
 
-        binding.addLecture.setOnClickListener {
+        binding.editLecture.setOnClickListener {
             //lecture 페이지로 이동
             val intent= Intent(context, LectureSetActivity::class.java)
 

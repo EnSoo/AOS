@@ -50,13 +50,14 @@
                         android:textSize="12sp"/>
                 </com.google.android.material.textfield.TextInputLayout>
                 <ImageView
-                    android:id="@+id/add_lecture"
+                    android:id="@+id/edit_lecture"
                     android:layout_width="32dp"
                     android:layout_height="match_parent"
                     android:layout_marginRight="10dp"
                     android:src="@drawable/ic_add_lecture"
                     android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"/>
+                    android:layout_centerVertical="true"
+                    android:visibility="invisible"/>
             </RelativeLayout>
         </com.google.android.material.appbar.AppBarLayout>
         <LinearLayout
