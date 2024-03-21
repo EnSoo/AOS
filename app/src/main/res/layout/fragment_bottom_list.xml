@@ -36,14 +36,14 @@
                         android:textSize="12sp" />
                 </com.google.android.material.textfield.TextInputLayout>
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/input_layout_edit"
+                    android:id="@+id/input_layout_search"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_toRightOf="@+id/input_layout_dropdown"
                     android:gravity="center_vertical"
                     android:hint="모임 검색">
                     <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/tv"
+                        android:id="@+id/input_edit_search"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
                         android:inputType="text"

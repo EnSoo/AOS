@@ -1,8 +1,10 @@
 package com.mrhiles.aos.activities
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -39,24 +41,33 @@ class LectureSetActivity : AppCompatActivity() {
         binding.inputStartDate.editText?.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this)
             datePickerDialog.setOnDateSetListener { view, year, month, dayOfMonth ->
-                val selectedDate= Calendar.getInstance()
-                selectedDate.set(year, month, dayOfMonth)
+                val timePickerDialog=TimePickerDialog(this, TimePickerDialog.OnTimeSetListener() { view, hourOfDay, minute ->
+                    val selectedDate= Calendar.getInstance()
+                    selectedDate.set(year, month, dayOfMonth, hourOfDay, minute)
 
-                val format= SimpleDateFormat("yyyy-MM-dd")
-                val formattedDate=format.format(selectedDate.time)
-                binding.inputStartDate.editText?.setText(formattedDate)
+                    val format= SimpleDateFormat("yyyy-MM-dd HH:mm")
+                    val formattedDate=format.format(selectedDate.time)
+                    binding.inputStartDate.editText?.setText(formattedDate)
+
+                    // Open TimePickerDialog for end date after setting start date
+                    openEndDatePicker(selectedDate.timeInMillis)
+                },0,0,false)
+                timePickerDialog.show();
             }
             datePickerDialog.show()
         }
         binding.inputEndDate.editText?.setOnClickListener {
             val datePickerDialog = DatePickerDialog(this)
             datePickerDialog.setOnDateSetListener { view, year, month, dayOfMonth ->
-                val selectedDate= Calendar.getInstance()
-                selectedDate.set(year, month, dayOfMonth)
+                val timePickerDialog=TimePickerDialog(this, TimePickerDialog.OnTimeSetListener() { view, hourOfDay, minute ->
+                    val selectedDate= Calendar.getInstance()
+                    selectedDate.set(year, month, dayOfMonth, hourOfDay, minute)
 
-                val format= SimpleDateFormat("yyyy-MM-dd")
-                val formattedDate=format.format(selectedDate.time)
-                binding.inputEndDate.editText?.setText(formattedDate)
+                    val format= SimpleDateFormat("yyyy-MM-dd HH:mm")
+                    val formattedDate=format.format(selectedDate.time)
+                    binding.inputEndDate.editText?.setText(formattedDate)
+                },0,0,false)
+                timePickerDialog.show();
             }
             datePickerDialog.show()
         }
@@ -78,8 +89,6 @@ class LectureSetActivity : AppCompatActivity() {
         binding.arrowBack.setOnClickListener { finish() }
         binding.btnCancel.setOnClickListener { finish() }
         binding.btnSubmit.setOnClickListener {
-
-
             val textInputLayoutList:MutableMap<String,TextInputLayout> = mutableMapOf()
 
             val titleInputLayout=binding.inputTitle
@@ -89,6 +98,8 @@ class LectureSetActivity : AppCompatActivity() {
             val studyroomIdInputLayout=binding.inputStudyroomId
             val locationInputLayout=binding.inputLocation
             val placeNameInputLayout=binding.inputPlaceName
+            val xInputLayout=binding.inputX
+            val yInputLayout=binding.inputY
             val joinMaxLayout=binding.inputJoinMax
             val joinMinInputLayout=binding.inputJoinMin
             val notificationInputLayout=binding.inputNotification
@@ -100,6 +111,8 @@ class LectureSetActivity : AppCompatActivity() {
             textInputLayoutList["studyroom_id"]=studyroomIdInputLayout
             textInputLayoutList["location"]=locationInputLayout
             textInputLayoutList["placeName"]=placeNameInputLayout
+            textInputLayoutList["x"]=xInputLayout
+            textInputLayoutList["y"]=yInputLayout
             textInputLayoutList["joinMax"]=joinMaxLayout
             textInputLayoutList["joinMin"]=joinMinInputLayout
             textInputLayoutList["notification"]=notificationInputLayout
@@ -126,6 +139,8 @@ class LectureSetActivity : AppCompatActivity() {
                 studyroom_id = tl["studyroom_id"]!!.editText!!.text.toString(),
                 location = tl["location"]!!.editText!!.text.toString(),
                 place_name = tl["placeName"]!!.editText!!.text.toString(),
+                x = tl["x"]!!.editText!!.text.toString(),
+                y = tl["y"]!!.editText!!.text.toString(),
                 join_max = tl["joinMax"]!!.editText!!.text.toString(),
                 join_min = tl["joinMin"]!!.editText!!.text.toString(),
                 notification = tl["notification"]!!.editText!!.text.toString(),
@@ -156,16 +171,47 @@ class LectureSetActivity : AppCompatActivity() {
             val location=intent?.getStringExtra("location")
             val place_name=intent?.getStringExtra("place_name")
             val studyroom_id=intent?.getStringExtra("studyroom_id")
-
+            val x=intent?.getStringExtra("x") // X 좌표값, 경위도인 경우 longitude(경도)
+            val y=intent?.getStringExtra("y") // Y 좌표값, 경위도인 경우 latitue(위도)
             val studyroomIdInputEditText=binding.inputStudyroomId.editText
             val locationInputEditText=binding.inputLocation.editText
             val placeNameInputEditText=binding.inputPlaceName.editText
+            val xEditText=binding.inputX.editText
+            val yEditText=binding.inputY.editText
             locationInputEditText?.setText(location)
             placeNameInputEditText?.setText(place_name)
             studyroomIdInputEditText?.setText(studyroom_id)
+            xEditText?.setText(x)
+            yEditText?.setText(y)
 
         } else {
             Toast.makeText(this, "위치 선택을 취소 했습니다.", Toast.LENGTH_SHORT).show();
         }
     })
+
+    private fun openEndDatePicker(startDateInMillis: Long) {
+        val datePickerDialog = DatePickerDialog(this)
+        datePickerDialog.setOnDateSetListener { view, year, month, dayOfMonth ->
+            val selectedEndDate = Calendar.getInstance()
+            selectedEndDate.set(year, month, dayOfMonth)
+
+            val timePickerDialog = TimePickerDialog(this, TimePickerDialog.OnTimeSetListener { view, hourOfDay, minute ->
+                selectedEndDate.set(Calendar.HOUR_OF_DAY, hourOfDay)
+                selectedEndDate.set(Calendar.MINUTE, minute)
+
+                val format = SimpleDateFormat("yyyy-MM-dd HH:mm")
+                val formattedEndDate = format.format(selectedEndDate.timeInMillis)
+
+                if (selectedEndDate.timeInMillis < startDateInMillis) {
+                    // End date is before start date, show error message
+                    Toast.makeText(this, "종료 날짜는 시작 날짜보다 미래여야 합니다.", Toast.LENGTH_SHORT).show()
+                    binding.inputEndDate.editText?.setText("") // Clear end date field
+                } else {
+                    binding.inputEndDate.editText?.setText(formattedEndDate)
+                }
+            }, 0, 0, false)
+            timePickerDialog.show()
+        }
+        datePickerDialog.show()
+    }
 }

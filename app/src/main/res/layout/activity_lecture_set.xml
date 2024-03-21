@@ -228,6 +228,36 @@
                             android:textSize="12sp"
                             android:textColor="@color/black"/>
                     </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/input_x"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:hint="longitude"
+                        android:visibility="gone">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:inputType="none"
+                            android:focusableInTouchMode="false"
+                            android:textSize="12sp"
+                            android:textColor="@color/black"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/input_y"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="4dp"
+                        android:hint="latitue"
+                        android:visibility="gone">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:layout_width="match_parent"
+                            android:layout_height="48dp"
+                            android:inputType="none"
+                            android:focusableInTouchMode="false"
+                            android:textSize="12sp"
+                            android:textColor="@color/black"/>
+                    </com.google.android.material.textfield.TextInputLayout>
                 </LinearLayout>
                 <LinearLayout
                     android:id="@+id/layout_join"

@@ -7,19 +7,23 @@ import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.LectureSetActivity
 import com.mrhiles.aos.activities.LoginActivity
 import com.mrhiles.aos.activities.MainActivity
+import com.mrhiles.aos.adapter.LectureListRecyclerAdapter
 import com.mrhiles.aos.data.Lecture
 import com.mrhiles.aos.data.LoadStudyRoomFaovr
+import com.mrhiles.aos.data.ResponseLecture
 import com.mrhiles.aos.data.UserCheck
 import com.mrhiles.aos.data.UserInfo
 import com.mrhiles.aos.data.requestData
 import com.mrhiles.aos.data.responseData
 import com.mrhiles.aos.data.studyRoomFaovr
+import com.mrhiles.aos.databinding.FragmentBottomListBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -71,51 +75,44 @@ class ServiceRequest(
 
 
     fun serviceRequest(processObject :Any) {
+        getToken()
+        val retrofitService = setRetrofitService()
+        // 파라미터를 Json 형태로 변환
+        var requestData: requestData = requestData(params, URLEncoder.encode(accessToken, "UTF-8"))
+        val call = retrofitService.serviceRequest(serviceUrl, requestData)
+        call.enqueue(object : Callback<responseData> {
+            override fun onResponse(
+                call: Call<responseData>,
+                response: Response<responseData>
+            ) {
+                Log.d("response","${response}")
+                if (response.isSuccessful) {
+                    val s = response.body()
+                    Log.d("s","${s}")
+                    s ?: return
+                    error = s.error
+                    code = s.code
+                    responseData = s.params
+                    if (error == "5301") {  // 액세스 토큰이 만료 되었을 경우 리프레쉬로 요청
+                        getAccessToken()
+                    } else if (error == "5302" || error == "5303" || error == "5204") { // 5302, 리프레쉬 토큰 만료, 5303 유효하지 않은 토큰일 경우, 5204 액세스 토큰 재발급 실패
+                        Toast.makeText(context, "유효하지 않은 토큰으로 작업하였으므로 로그아웃 합니다.", Toast.LENGTH_SHORT).show()
+                        logout()
+                    } else if (error == "5300") {  // 유효한 토큰일 경우
+                        serviceProcess(processObject)
+                    } else if (error == "5200") { // 액세스 토큰 재발급 요청이 정상적으로 이루어 졌을 경우 서비스 재요청
+                        serviceRequest(processObject)
 
-        if(G.isLogin) { // 로그인 상태 경우만 실행
-            getToken()
-            val retrofitService = setRetrofitService()
-            // 파라미터를 Json 형태로 변환
-            var requestData: requestData = requestData(params, URLEncoder.encode(accessToken, "UTF-8"))
-            val call = retrofitService.serviceRequest(serviceUrl, requestData)
-            call.enqueue(object : Callback<responseData> {
-                override fun onResponse(
-                    call: Call<responseData>,
-                    response: Response<responseData>
-                ) {
-                    Log.d("response","${response}")
-                    if (response.isSuccessful) {
-                        val s = response.body()
-                        Log.d("s","${s}")
-                        s ?: return
-                        error = s.error
-                        code = s.code
-                        responseData = s.params
-                        if (error == "5301") {  // 액세스 토큰이 만료 되었을 경우 리프레쉬로 요청
-                            getAccessToken()
-                        } else if (error == "5302" || error == "5303" || error == "5204") { // 5302, 리프레쉬 토큰 만료, 5303 유효하지 않은 토큰일 경우, 5204 액세스 토큰 재발급 실패
-                            Toast.makeText(context, "유효하지 않은 토큰으로 작업하였으므로 로그아웃 합니다.", Toast.LENGTH_SHORT).show()
-                            logout()
-                        } else if (error == "5300") {  // 유효한 토큰일 경우
-                            serviceProcess(processObject)
-                        } else if (error == "5200") { // 액세스 토큰 재발급 요청이 정상적으로 이루어 졌을 경우 서비스 재요청
-                            serviceRequest(processObject)
-
-                        }
                     }
                 }
+            }
 
-                override fun onFailure(call: Call<responseData>, t: Throwable) {
-                    Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
+            override fun onFailure(call: Call<responseData>, t: Throwable) {
+                Toast.makeText(context, "${t.message}", Toast.LENGTH_SHORT).show()
 
-                }
-            })
-        } else {
-            //로그인 상태가 아닐 경우 activity 띄워야 함
-            val intent = Intent(context, LoginActivity::class.java)
-            intent.putExtra("login_type",G.userInfo.loginType)
-            context.startActivity(intent)
-        }
+            }
+        })
+
     }
 
 
@@ -174,7 +171,11 @@ class ServiceRequest(
         } else if(param.type == "remove") {
             Toast.makeText(context, "강의 삭제가 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
         } else if(param.type == "load") {
-            // 강의 목록
+            val lectureList=Gson().fromJson(responseData, Array<ResponseLecture>::class.java)
+            lectureList?: return
+            var binding=(processObject as FragmentBottomListBinding)
+            binding.listRecycler.adapter= LectureListRecyclerAdapter(context,lectureList)
+            binding.listRecycler.adapter!!.notifyDataSetChanged()
         } else if(param.type == "deadline") {
             Toast.makeText(context, "강의 마감이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
         } else if(param.type == "studentlist") {

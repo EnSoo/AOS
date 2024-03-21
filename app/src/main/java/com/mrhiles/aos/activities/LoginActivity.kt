@@ -33,7 +33,6 @@ class LoginActivity : AppCompatActivity() {
             "naver" -> clickNaver()
             "kakao" -> clickKakao()
         }
-
         // 로그인 버튼 클릭 시
         binding.btnSignin.setOnClickListener {
             clickEmail()

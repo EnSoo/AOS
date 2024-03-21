@@ -30,6 +30,8 @@ data class Lecture (
     val studyroom_id:String="",         // 스터디룸 id
     val location:String="",             // 강의 지역
     val place_name:String="",           // 강의 장소명
+    var x:String="",                    // X 좌표값, 경위도인 경우 longitude(경도)
+    var y:String="",                    // Y 좌표값, 경위도인 경우 latitue(위도)
     val place_nickname:String="",       // 강의 별명
     val join_max:String="",             // 최대인원
     val join_min:String="",             // 최소인원
@@ -63,7 +65,10 @@ data class ResponseLecture (
     val start_date:String="",           // 강의 시작 날짜
     val end_date:String="",             // 강의 종료 날짜
     val studyroom_id:String="",         // 스터디룸 id
+    val location:String="",             // 강의 지역
     val place_name:String="",           // 스터디룸 장소명
+    var longitude:String="",                    // X 좌표값, 경위도인 경우 longitude(경도)
+    var latitue:String="",                    // Y 좌표값, 경위도인 경우 latitue(위도)
     val place_nickname:String="",       // 스터디룸 별명
     val join_max:String="",             // 최대인원
     val join_min:String="",             // 최소인원

@@ -355,6 +355,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val phone=studyRoom.phone
         val place_name=studyRoom.place_name
         val studyroom_id=studyRoom.id
+        val x=studyRoom.x
+        val y=studyRoom.y
 
         val dialog=AlertDialog.Builder(this).setTitle("강의 장소 선택")
             .setView(R.layout.dialog_marker_click_map).create()
@@ -365,12 +367,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         dialog.findViewById<TextView>(R.id.dialog_location)?.setText(location)
         dialog.findViewById<TextView>(R.id.dialog_place_name)?.setText(place_name)
         dialog.findViewById<TextView>(R.id.dialog_phone)?.setText(phone)
-
         dialog.findViewById<Button>(R.id.btn_confirm)?.setOnClickListener {
             val intent = Intent()
             intent.putExtra("location", location)
             intent.putExtra("place_name", place_name)
             intent.putExtra("studyroom_id", studyroom_id)
+            intent.putExtra("x", x) // X 좌표값, 경위도인 경우 longitude(경도)
+            intent.putExtra("y", y) // Y 좌표값, 경위도인 경우 latitue(위도)
             setResult(RESULT_OK, intent)
             finish()
         }

@@ -30,6 +30,8 @@ class MainActivity : AppCompatActivity() {
     var searchStudyRoomResponse:KakaoSearchStudyRoomRespnose?=null
     // study Room Search Index
     var pgIndex:Int=1
+
+    var menuNum:Int=0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -85,15 +87,23 @@ class MainActivity : AppCompatActivity() {
     fun fragmentLoad(login:Boolean=false) {
         binding.bnv.setOnItemSelectedListener {
             when(it.itemId) {
-                R.id.menu_bnv_home -> supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomHomeFragment()).commit()
-                R.id.menu_bnv_list -> supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomListFragment()).commit()
+                R.id.menu_bnv_home -> {
+                    supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomHomeFragment()).commit()
+                    menuNum=0
+                }
+                R.id.menu_bnv_list -> {
+                    supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomListFragment()).commit()
+                    menuNum=1
+                }
                 R.id.menu_bnv_reserved -> {
                     if(!G.isLogin) BottomLoginFragment().show(supportFragmentManager,"bnv_favor")
                     else supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomReservedFragment()).commit()
+                    menuNum=2
                 }
                 R.id.menu_bnv_profile -> {
                     if(!G.isLogin) BottomLoginFragment().show(supportFragmentManager,"bnv_profile")
                     else supportFragmentManager.beginTransaction().replace(R.id.container_fragment, BottomProfileFragment()).commit()
+                    menuNum=3
                 }
             }
             true
