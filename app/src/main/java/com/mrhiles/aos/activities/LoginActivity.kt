@@ -1,7 +1,9 @@
 package com.mrhiles.aos.activities
 
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
+import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -10,11 +12,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.user.UserApiClient
+import com.mrhiles.aos.data.LoadStudyRoomFaovr
 import com.mrhiles.aos.data.LoginResponse
 import com.mrhiles.aos.databinding.ActivityLoginBinding
 import com.mrhiles.aos.network.LoginProcess
 import com.mrhiles.aos.network.ServiceRequest
 import com.mrhiles.aos.data.studyRoomFaovr
+import com.mrhiles.aos.network.ServiceFavorRequestCallback
 import com.navercorp.nid.NaverIdLoginSDK
 import com.navercorp.nid.oauth.OAuthLoginCallback
 import retrofit2.Call
@@ -23,6 +27,8 @@ import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     private val binding by lazy { ActivityLoginBinding.inflate(layoutInflater) }
+    // SQLite 작업을 위해
+    private lateinit var db: SQLiteDatabase
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -187,11 +193,26 @@ class LoginActivity : AppCompatActivity() {
         }
 
     }
-
     private fun favorLoad() {
+        //sqllite 작업 시작
+        // "study.db"라는 이름으로 데이터베이스 파일을 만들거나 열어서 참조하기
+        db= ContextWrapper(this).openOrCreateDatabase("study", Context.MODE_PRIVATE,null)
+
+        // "favor"라는 이름의 표(테이블) 만들기 - SQL 쿼리문을 사용하여.. CRUD 작업수행
+        db.execSQL("CREATE TABLE IF NOT EXISTS favor(id TEXT PRIMARY KEY, place_name TEXT, category_name TEXT, phone TEXT, address_name TEXT, x TEXT, y TEXT, place_url TEXT)")
+
         val studyRoomFaovr= studyRoomFaovr(type="load")
-        val serviceRequest= ServiceRequest(this,"/user/favor.php",studyRoomFaovr)
-        serviceRequest.serviceRequest("")
+        val serviceRequest= ServiceRequest(this,"/user/favor.php",studyRoomFaovr, callbackFavor = object : ServiceFavorRequestCallback{
+            override fun onServiceFavorResponseSuccess(response: List<LoadStudyRoomFaovr>?) {
+                response?.forEach {
+                    db.execSQL("INSERT INTO favor VALUES('${it.id}','${it.place_name}','${it.category_name}','${it.phone}','${it.address_name}'," +
+                            "'${it.x}','${it.y}','${it.place_url}')")
+                }
+            }
+
+            override fun onServiceFavorResponseFailure() {}
+
+        }).serviceRequest()
     }
 
 }

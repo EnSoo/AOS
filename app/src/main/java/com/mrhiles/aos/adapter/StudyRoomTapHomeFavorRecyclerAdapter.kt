@@ -8,6 +8,8 @@ import android.database.sqlite.SQLiteDatabase
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
 import com.google.gson.Gson
@@ -15,12 +17,14 @@ import com.mrhiles.aos.G
 import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.MapActivity
 import com.mrhiles.aos.activities.StudyRoomDetailActivity
+import com.mrhiles.aos.data.LoadStudyRoomFaovr
 import com.mrhiles.aos.data.StudyRoom
 import com.mrhiles.aos.databinding.RecyclerAdapterStudyRoomListBinding
 import com.mrhiles.aos.network.ServiceRequest
 import com.mrhiles.aos.data.studyRoomFaovr
+import com.mrhiles.aos.network.ServiceFavorRequestCallback
 
-class StudyRoomTapHomeFavorRecyclerAdapter(val context:Context, val documents:List<StudyRoom>) : Adapter<StudyRoomTapHomeFavorRecyclerAdapter.VH>(){
+class StudyRoomTapHomeFavorRecyclerAdapter(val context:Context, val documents:List<StudyRoom>) : RecyclerView.Adapter<StudyRoomTapHomeFavorRecyclerAdapter.VH>(){
     inner class VH(val binding:RecyclerAdapterStudyRoomListBinding) : ViewHolder(binding.root)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)=VH(RecyclerAdapterStudyRoomListBinding.inflate(LayoutInflater.from(context),parent,false))
     override fun getItemCount()=documents.size
@@ -74,12 +78,20 @@ class StudyRoomTapHomeFavorRecyclerAdapter(val context:Context, val documents:Li
                 val cursor: Cursor = db.rawQuery("SELECT * FROM favor WHERE id=?", arrayOf(sr.id))
                 if(cursor.count>0){ // sql 조회 시 있을 경우 -> 삭제
                     val studyRoomFaovr= studyRoomFaovr(sr.id,sr.place_name, sr.category_name, sr.phone, sr.address_name, sr.x, sr.y, sr.place_url,"remove")
-                    val serviceRequest= ServiceRequest(context,"/user/favor.php",studyRoomFaovr)
-                    serviceRequest.serviceRequest(it)
+                    ServiceRequest(context,"/user/favor.php",studyRoomFaovr, callbackFavor = object : ServiceFavorRequestCallback{
+                        override fun onServiceFavorResponseSuccess(response: List<LoadStudyRoomFaovr>?) {
+                            holder.binding.favor.setImageResource(R.drawable.ic_favor_border)
+                        }
+                        override fun onServiceFavorResponseFailure() {}
+                    }).serviceRequest(it)
                 } else { // sql 조회 시 없을 경우 -> 추가
                     val studyRoomFaovr= studyRoomFaovr(sr.id,sr.place_name, sr.category_name, sr.phone, sr.address_name, sr.x, sr.y, sr.place_url,"add")
-                    val serviceRequest= ServiceRequest(context,"/user/favor.php",studyRoomFaovr)
-                    serviceRequest.serviceRequest(it)
+                    ServiceRequest(context,"/user/favor.php",studyRoomFaovr, callbackFavor = object : ServiceFavorRequestCallback{
+                        override fun onServiceFavorResponseSuccess(response: List<LoadStudyRoomFaovr>?) {
+                            holder.binding.favor.setImageResource(R.drawable.ic_favor_full)
+                        }
+                        override fun onServiceFavorResponseFailure() {}
+                    }).serviceRequest(it)
                 }
             }
         }

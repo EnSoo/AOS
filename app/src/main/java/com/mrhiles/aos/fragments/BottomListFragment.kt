@@ -16,8 +16,8 @@ import com.mrhiles.aos.activities.LectureSetActivity
 import com.mrhiles.aos.adapter.LectureListRecyclerAdapter
 import com.mrhiles.aos.data.Lecture
 import com.mrhiles.aos.data.ResponseLecture
+import com.mrhiles.aos.network.ServiceLectureRequestCallback
 import com.mrhiles.aos.network.ServiceRequest
-import com.mrhiles.aos.network.ServiceRequestCallback
 
 class BottomListFragment : Fragment() {
     private val binding by lazy { FragmentBottomListBinding.inflate(layoutInflater) }
@@ -42,8 +42,8 @@ class BottomListFragment : Fragment() {
         else binding.editLecture.visibility=View.INVISIBLE
 
         val request= Lecture(type="load", page = "1")
-        val serviceRequest= ServiceRequest(requireContext(),"/user/lecture.php",request,object : ServiceRequestCallback{
-            override fun onServiceRequesetSuccess(response: List<ResponseLecture>?) {
+        ServiceRequest(requireContext(),"/user/lecture.php",request,callbackLecture = object : ServiceLectureRequestCallback{
+            override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {
                 response?.forEach{
                     lectureList.add(it)
                 }
@@ -51,12 +51,11 @@ class BottomListFragment : Fragment() {
                 binding.listRecycler.adapter!!.notifyDataSetChanged()
             }
 
-            override fun onServiceRequesetFailure() {
+            override fun onServiceLectureResponseFailure() {
                 TODO("Not yet implemented")
             }
 
-        })
-        serviceRequest.serviceRequest("")
+        }).serviceRequest("")
 
         binding.editLecture.setOnClickListener {
             //lecture 페이지로 이동
@@ -82,8 +81,8 @@ class BottomListFragment : Fragment() {
     }
     private fun searchLectureList() {
         val request= Lecture(type="search", search_location = location, search_string = searchQuery, page = "1")
-        val serviceRequest= ServiceRequest(requireContext(),"/user/lecture.php",request, object : ServiceRequestCallback{
-            override fun onServiceRequesetSuccess(response: List<ResponseLecture>?) {
+        ServiceRequest(requireContext(),"/user/lecture.php",request, callbackLecture = object : ServiceLectureRequestCallback{
+            override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {
                 lectureList.clear()
                 response?.forEach{
                     lectureList.add(it)
@@ -91,8 +90,7 @@ class BottomListFragment : Fragment() {
                 binding.listRecycler.adapter= LectureListRecyclerAdapter(requireContext(),lectureList)
                 binding.listRecycler.adapter!!.notifyDataSetChanged()
             }
-            override fun onServiceRequesetFailure() {}
-        })
-        serviceRequest.serviceRequest()
+            override fun onServiceLectureResponseFailure() {}
+        }).serviceRequest()
     }
 }

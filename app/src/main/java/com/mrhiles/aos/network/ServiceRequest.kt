@@ -26,7 +26,9 @@ import java.net.URLEncoder
 class ServiceRequest(
     val context: Context,
     val serviceUrl: String,
-    var params: Any, private val callback: ServiceRequestCallback? = null
+    var params: Any,
+    private val callbackFavor: ServiceFavorRequestCallback? = null,
+    private val callbackLecture: ServiceLectureRequestCallback? = null
 ) {
 // --- 초기화 부분 ---
     private lateinit var error:String
@@ -123,57 +125,54 @@ class ServiceRequest(
     }
 
     private fun favorProcess(processObject:Any?) {
-
-        //sqllite 작업 시작
+        //sqllite에서 id 비교후 해당 아이템이 찜한 것이었으면 표기
         // "study.db"라는 이름으로 데이터베이스 파일을 만들거나 열어서 참조하기
         db= ContextWrapper(context).openOrCreateDatabase("study", Context.MODE_PRIVATE,null)
 
         // "favor"라는 이름의 표(테이블) 만들기 - SQL 쿼리문을 사용하여.. CRUD 작업수행
         db.execSQL("CREATE TABLE IF NOT EXISTS favor(id TEXT PRIMARY KEY, place_name TEXT, category_name TEXT, phone TEXT, address_name TEXT, x TEXT, y TEXT, place_url TEXT)")
+
+
         val param=params as studyRoomFaovr
         if(param.type=="remove") { // favor 삭제 기능일 경우
-            (processObject as ImageView).setImageResource(R.drawable.ic_favor_border)
+            callbackFavor?.onServiceFavorResponseSuccess()
             param.apply {
                 db.execSQL("DELETE FROM favor WHERE id=?", arrayOf(id))
             }
             Toast.makeText(context, "찜을 삭제 했습니다.", Toast.LENGTH_SHORT).show()
         } else if (param.type=="add"){ // favor 추가 기능일 경우
-            (processObject as ImageView).setImageResource(R.drawable.ic_favor_full)
-
+            callbackFavor?.onServiceFavorResponseSuccess()
             param.apply {
                 db.execSQL("INSERT INTO favor VALUES('$id','$place_name','$category_name','$phone','$address_name','$x','$y','$place_url')")
             }
             Toast.makeText(context, "찜을 추가 했습니다.", Toast.LENGTH_SHORT).show()
         } else if (param.type=="load") { //load 할 경우
             val studyRoomFavorList:Array<LoadStudyRoomFaovr> =Gson().fromJson(responseData,Array<LoadStudyRoomFaovr>::class.java)
-            studyRoomFavorList.forEach {
-                db.execSQL("INSERT INTO favor VALUES('${it.id}','${it.place_name}','${it.category_name}','${it.phone}','${it.address_name}'," +
-                        "'${it.x}','${it.y}','${it.place_url}')")
-            }
+            callbackFavor?.onServiceFavorResponseSuccess(studyRoomFavorList.toList())
         }
     }
 
     private fun lectureProcess() {
         val param=params as Lecture
         if(param.type == "add" || param.type == "modify") {
-            callback?.onServiceRequesetSuccess()
+            callbackLecture?.onServiceLectureResponseSuccess()
         } else if(param.type == "remove") {
             Toast.makeText(context, "강의 삭제가 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
         } else if(param.type == "load" || param.type == "search") {
             val lectureList=Gson().fromJson(responseData, Array<ResponseLecture>::class.java)
-            callback?.onServiceRequesetSuccess(lectureList.toList())
+            callbackLecture?.onServiceLectureResponseSuccess(lectureList.toList())
         } else if(param.type == "deadline") {
             Toast.makeText(context, "강의 마감이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
-            callback?.onServiceRequesetSuccess()
+            callbackLecture?.onServiceLectureResponseSuccess()
         } else if(param.type == "studentlist") {
             // 강의 생성자가 참여한 학생 리스트를 볼 경우
-            callback?.onServiceRequesetSuccess()
+            callbackLecture?.onServiceLectureResponseSuccess()
         } else if(param.type == "studentjoin") {
             Toast.makeText(context, "강의 신청이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
-            callback?.onServiceRequesetSuccess()
+            callbackLecture?.onServiceLectureResponseSuccess()
         } else if(param.type == "withdraw") {
             Toast.makeText(context, "강의 신청 취소가 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
-            callback?.onServiceRequesetSuccess()
+            callbackLecture?.onServiceLectureResponseSuccess()
         }
 
     }
