@@ -4,18 +4,15 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
-import android.view.View
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isEmpty
-import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.mrhiles.aos.data.Lecture
-import com.mrhiles.aos.data.studyRoomFaovr
+import com.mrhiles.aos.data.ResponseLecture
 import com.mrhiles.aos.databinding.ActivityLectureSetBinding
 import com.mrhiles.aos.network.ServiceRequest
+import com.mrhiles.aos.network.ServiceRequestCallback
 import java.text.SimpleDateFormat
 import java.util.Calendar
 
@@ -147,8 +144,24 @@ class LectureSetActivity : AppCompatActivity() {
                 contract = tl["contract"]!!.editText!!.text.toString(),
                 type=type
             )
-            val serviceRequest= ServiceRequest(this,"/user/lecture.php",lecture)
-            serviceRequest.serviceRequest(this)
+            val serviceRequest= ServiceRequest(this,"/user/lecture.php",lecture, object : ServiceRequestCallback{
+                override fun onServiceRequesetSuccess(response: List<ResponseLecture>?) {
+                    var ment:String=""
+                    if(type=="add") { ment="강의를 성공적으로 생성하였습니다." }
+                    if(type=="modify") { ment="강의를 성공적으로 수정하였습니다." }
+                    Toast.makeText(this@LectureSetActivity, "$ment", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+
+                override fun onServiceRequesetFailure() {
+                    var ment:String=""
+                    if(type=="add") { ment="강의를 생성에 실패하였습니다." }
+                    if(type=="modify") { ment="강의를 생성에 성공하였습니다." }
+                    Toast.makeText(this@LectureSetActivity, "$ment", Toast.LENGTH_SHORT).show()
+                    finish()
+                }
+
+            })
         }
     }
 

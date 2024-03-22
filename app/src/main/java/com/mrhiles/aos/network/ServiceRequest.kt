@@ -2,19 +2,14 @@ package com.mrhiles.aos.network
 
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
 import android.database.sqlite.SQLiteDatabase
 import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.recyclerview.widget.RecyclerView
 import com.google.gson.Gson
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
-import com.mrhiles.aos.activities.LectureSetActivity
-import com.mrhiles.aos.activities.LoginActivity
 import com.mrhiles.aos.activities.MainActivity
-import com.mrhiles.aos.adapter.LectureListRecyclerAdapter
 import com.mrhiles.aos.data.Lecture
 import com.mrhiles.aos.data.LoadStudyRoomFaovr
 import com.mrhiles.aos.data.ResponseLecture
@@ -23,16 +18,15 @@ import com.mrhiles.aos.data.UserInfo
 import com.mrhiles.aos.data.requestData
 import com.mrhiles.aos.data.responseData
 import com.mrhiles.aos.data.studyRoomFaovr
-import com.mrhiles.aos.databinding.FragmentBottomListBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.net.URLEncoder
 
 class ServiceRequest(
-    val context : Context,
-    val serviceUrl : String,
-    var params: Any
+    val context: Context,
+    val serviceUrl: String,
+    var params: Any, private val callback: ServiceRequestCallback? = null
 ) {
 // --- 초기화 부분 ---
     private lateinit var error:String
@@ -74,7 +68,7 @@ class ServiceRequest(
 // ---------- 초기화 부분 end ----------
 
 
-    fun serviceRequest(processObject :Any) {
+    fun serviceRequest(processObject :Any?=null) {
         getToken()
         val retrofitService = setRetrofitService()
         // 파라미터를 Json 형태로 변환
@@ -88,7 +82,6 @@ class ServiceRequest(
                 Log.d("response","${response}")
                 if (response.isSuccessful) {
                     val s = response.body()
-                    Log.d("s","${s}")
                     s ?: return
                     error = s.error
                     code = s.code
@@ -118,18 +111,18 @@ class ServiceRequest(
 
 
 // ---------- 서비스 처리 부분 ----------
-    private fun serviceProcess(processObject:Any) {
+    private fun serviceProcess(processObject:Any?) {
         if(code == "200") {
             when(serviceUrl) { // 서비스에 따라 파싱이 필요
                 "/user/favor.php" -> favorProcess(processObject)
-                "/user/lecture.php" -> lectureProcess(processObject)
+                "/user/lecture.php" -> lectureProcess()
             }
         } else {
             Toast.makeText(context, "오류가 있어 처리 되지 못했습니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun favorProcess(processObject:Any) {
+    private fun favorProcess(processObject:Any?) {
 
         //sqllite 작업 시작
         // "study.db"라는 이름으로 데이터베이스 파일을 만들거나 열어서 참조하기
@@ -160,30 +153,27 @@ class ServiceRequest(
         }
     }
 
-    private fun lectureProcess(processObject:Any) {
+    private fun lectureProcess() {
         val param=params as Lecture
-        if(param.type == "add") {
-            Toast.makeText(context, "강의 생성이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
-            (processObject as LectureSetActivity).finish()
-        } else if(param.type == "modify") {
-            Toast.makeText(context, "강의 수정이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
-            (processObject as LectureSetActivity).finish()
+        if(param.type == "add" || param.type == "modify") {
+            callback?.onServiceRequesetSuccess()
         } else if(param.type == "remove") {
             Toast.makeText(context, "강의 삭제가 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
         } else if(param.type == "load" || param.type == "search") {
             val lectureList=Gson().fromJson(responseData, Array<ResponseLecture>::class.java)
-            lectureList?: return
-            var binding=(processObject as FragmentBottomListBinding)
-            binding.listRecycler.adapter= LectureListRecyclerAdapter(context,lectureList)
-            binding.listRecycler.adapter!!.notifyDataSetChanged()
+            callback?.onServiceRequesetSuccess(lectureList.toList())
         } else if(param.type == "deadline") {
             Toast.makeText(context, "강의 마감이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
+            callback?.onServiceRequesetSuccess()
         } else if(param.type == "studentlist") {
             // 강의 생성자가 참여한 학생 리스트를 볼 경우
+            callback?.onServiceRequesetSuccess()
         } else if(param.type == "studentjoin") {
             Toast.makeText(context, "강의 신청이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
+            callback?.onServiceRequesetSuccess()
         } else if(param.type == "withdraw") {
             Toast.makeText(context, "강의 신청 취소가 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
+            callback?.onServiceRequesetSuccess()
         }
 
     }

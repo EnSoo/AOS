@@ -16,7 +16,7 @@ import com.mrhiles.aos.data.ResponseLecture
 import com.mrhiles.aos.databinding.RecyclerAdapterLectureListBinding
 import java.util.Calendar
 
-class LectureListRecyclerAdapter(val context: Context, val documents: Array<ResponseLecture>) : Adapter<LectureListRecyclerAdapter.VH>() {
+class LectureListRecyclerAdapter(val context: Context, val documents: List<ResponseLecture>) : Adapter<LectureListRecyclerAdapter.VH>() {
     inner class VH(val binding: RecyclerAdapterLectureListBinding) :ViewHolder(binding.root)
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int)=VH(RecyclerAdapterLectureListBinding.inflate(LayoutInflater.from(context),parent,false))
     override fun getItemCount(): Int {

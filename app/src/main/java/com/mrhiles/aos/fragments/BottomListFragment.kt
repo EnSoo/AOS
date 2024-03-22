@@ -7,23 +7,24 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.mrhiles.aos.G
 import com.mrhiles.aos.databinding.FragmentBottomListBinding
 import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.LectureSetActivity
-import com.mrhiles.aos.activities.MainActivity
 import com.mrhiles.aos.adapter.LectureListRecyclerAdapter
 import com.mrhiles.aos.data.Lecture
 import com.mrhiles.aos.data.ResponseLecture
 import com.mrhiles.aos.network.ServiceRequest
+import com.mrhiles.aos.network.ServiceRequestCallback
 
-class BottomListFragment : Fragment(){
+class BottomListFragment : Fragment() {
     private val binding by lazy { FragmentBottomListBinding.inflate(layoutInflater) }
     //검색 종류 : 범위, 검색키워드
     private var location=""
     private var searchQuery=""
+    private val lectureList:MutableList<ResponseLecture> = mutableListOf()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,8 +42,21 @@ class BottomListFragment : Fragment(){
         else binding.editLecture.visibility=View.INVISIBLE
 
         val request= Lecture(type="load", page = "1")
-        val serviceRequest= ServiceRequest(requireContext(),"/user/lecture.php",request)
-        serviceRequest.serviceRequest(binding)
+        val serviceRequest= ServiceRequest(requireContext(),"/user/lecture.php",request,object : ServiceRequestCallback{
+            override fun onServiceRequesetSuccess(response: List<ResponseLecture>?) {
+                response?.forEach{
+                    lectureList.add(it)
+                }
+                binding.listRecycler.adapter= LectureListRecyclerAdapter(requireContext(),lectureList)
+                binding.listRecycler.adapter!!.notifyDataSetChanged()
+            }
+
+            override fun onServiceRequesetFailure() {
+                TODO("Not yet implemented")
+            }
+
+        })
+        serviceRequest.serviceRequest("")
 
         binding.editLecture.setOnClickListener {
             //lecture 페이지로 이동
@@ -56,17 +70,29 @@ class BottomListFragment : Fragment(){
         binding.dropdownMenu.setOnItemClickListener { parent, view, position, id ->
             location=(view as TextView).text.toString()
             searchLectureList()
+            false
         }
         binding.inputEditSearch.setOnEditorActionListener { v, actionId, event ->
             searchQuery=binding.inputEditSearch.text.toString()
             binding.inputEditSearch.setText("")
+            Toast.makeText(context, "$searchQuery", Toast.LENGTH_SHORT).show()
             searchLectureList()
             false
         }
     }
     private fun searchLectureList() {
         val request= Lecture(type="search", search_location = location, search_string = searchQuery, page = "1")
-        val serviceRequest= ServiceRequest(requireContext(),"/user/lecture.php",request)
-        serviceRequest.serviceRequest(binding)
+        val serviceRequest= ServiceRequest(requireContext(),"/user/lecture.php",request, object : ServiceRequestCallback{
+            override fun onServiceRequesetSuccess(response: List<ResponseLecture>?) {
+                lectureList.clear()
+                response?.forEach{
+                    lectureList.add(it)
+                }
+                binding.listRecycler.adapter= LectureListRecyclerAdapter(requireContext(),lectureList)
+                binding.listRecycler.adapter!!.notifyDataSetChanged()
+            }
+            override fun onServiceRequesetFailure() {}
+        })
+        serviceRequest.serviceRequest()
     }
 }
