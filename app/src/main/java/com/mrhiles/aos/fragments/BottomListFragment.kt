@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.mrhiles.aos.G
 import com.mrhiles.aos.databinding.FragmentBottomListBinding
@@ -41,28 +43,14 @@ class BottomListFragment : Fragment() {
         if(G.isLogin) binding.editLecture.visibility=View.VISIBLE
         else binding.editLecture.visibility=View.INVISIBLE
 
-        val request= Lecture(type="load", page = "1")
-        ServiceRequest(requireContext(),"/user/lecture.php",request,callbackLecture = object : ServiceLectureRequestCallback{
-            override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {
-                response?.forEach{
-                    lectureList.add(it)
-                }
-                binding.listRecycler.adapter= LectureListRecyclerAdapter(requireContext(),lectureList)
-                binding.listRecycler.adapter!!.notifyDataSetChanged()
-            }
-
-            override fun onServiceLectureResponseFailure() {
-                TODO("Not yet implemented")
-            }
-
-        }).serviceRequest("")
+        lectureLoad()
 
         binding.editLecture.setOnClickListener {
             //lecture 페이지로 이동
             val intent= Intent(context, LectureSetActivity::class.java)
 
             intent.putExtra("type","add") // Type이 Item일 경우 1개만 검색
-            requireContext().startActivity(intent)
+            resultLauncher.launch(intent)
         }
 
         // 범위 드롭다운에서 아이템 클릭 시
@@ -78,7 +66,11 @@ class BottomListFragment : Fragment() {
             searchLectureList()
             false
         }
+
     }
+    // 글 추가 완료 후 새로고침
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(), {lectureLoad() })
+
     private fun searchLectureList() {
         val request= Lecture(type="search", search_location = location, search_string = searchQuery, page = "1")
         ServiceRequest(requireContext(),"/user/lecture.php",request, callbackLecture = object : ServiceLectureRequestCallback{
@@ -92,5 +84,22 @@ class BottomListFragment : Fragment() {
             }
             override fun onServiceLectureResponseFailure() {}
         }).serviceRequest()
+    }
+    private fun lectureLoad() {
+        val request= Lecture(type="load", page = "1")
+        ServiceRequest(requireContext(),"/user/lecture.php",request,callbackLecture = object : ServiceLectureRequestCallback{
+            override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {
+                response?.forEach{
+                    lectureList.add(it)
+                }
+                binding.listRecycler.adapter= LectureListRecyclerAdapter(requireContext(),lectureList)
+                binding.listRecycler.adapter!!.notifyDataSetChanged()
+            }
+
+            override fun onServiceLectureResponseFailure() {
+                TODO("Not yet implemented")
+            }
+
+        }).serviceRequest("")
     }
 }

@@ -2,11 +2,15 @@ package com.mrhiles.aos.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
 import com.mrhiles.aos.R
+import com.mrhiles.aos.data.Lecture
 import com.mrhiles.aos.data.ResponseLecture
 import com.mrhiles.aos.databinding.ActivityLectureDetailBinding
+import com.mrhiles.aos.network.ServiceLectureRequestCallback
+import com.mrhiles.aos.network.ServiceRequest
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.MapFragment
@@ -52,12 +56,12 @@ class LectureDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             finish()
         }
 
-        //참여버튼
-        binding.btnJoin.setOnClickListener { clickJoin() }
-        //취소버튼
-        binding.btnJoin.setOnClickListener { clickCancel()  }
+        //학생참여버튼
+        binding.btnJoin.setOnClickListener { clickJoin(responseLecture.lecture_id) }
+        //학생취소버튼
+        binding.btnWithdraw.setOnClickListener { clickWithdraw(responseLecture.lecture_id)  }
         //마감버튼
-        binding.btnWithdraw.setOnClickListener { clickWithdraw() }
+        binding.btnDeadline.setOnClickListener { clickDeadline(responseLecture.lecture_id) }
 
         //버튼 출력 처리
         responseLecture.apply {
@@ -149,14 +153,14 @@ class LectureDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             if(state=="START") {
                 //내가 생성한 강의 이면서 현재 진행중인 경우
                 binding.btnEdit.visibility= View.VISIBLE
-                binding.btnWithdraw.visibility= View.VISIBLE
+                binding.btnDeadline.visibility= View.VISIBLE
             } else {
                 //내 강의 이면서 현재 종료된 경우
             }
         } else {
             if(state=="START") {
                 //현재 진행중인 경우
-                if(lecture_join=="1") binding.btnCancel.visibility= View.VISIBLE
+                if(lecture_join=="1") binding.btnWithdraw.visibility= View.VISIBLE // 내가 참여중인 경우
                 else binding.btnJoin.visibility= View.VISIBLE
             } else {
                 //현재 종료된 경우
@@ -164,15 +168,37 @@ class LectureDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun clickJoin() {
+    private fun clickJoin(lecture_id:String) { // 학생 강의 참여
+        val lecture= Lecture(lecture_id = lecture_id, type="studentjoin")
+        ServiceRequest(this,"/user/lecture.php",lecture, callbackLecture = object : ServiceLectureRequestCallback {
+            override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {
+                binding.btnJoin.visibility= View.GONE
+                binding.btnWithdraw.visibility= View.VISIBLE
+            }
 
+            override fun onServiceLectureResponseFailure() {}
+        }).serviceRequest()
     }
 
-    private fun clickCancel() {
-
+    private fun clickWithdraw(lecture_id:String) { // 학생 강의 취소
+        val lecture= Lecture(lecture_id = lecture_id, type="withdraw")
+        ServiceRequest(this,"/user/lecture.php",lecture, callbackLecture = object : ServiceLectureRequestCallback {
+            override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {
+                binding.btnJoin.visibility= View.VISIBLE
+                binding.btnWithdraw.visibility= View.GONE
+            }
+            override fun onServiceLectureResponseFailure() {}
+        }).serviceRequest()
     }
 
-    private fun clickWithdraw() {
-
+    private fun clickDeadline(lecture_id:String) { // 강의 마감하기
+        val lecture= Lecture(lecture_id = lecture_id, type="deadline")
+        ServiceRequest(this,"/user/lecture.php",lecture, callbackLecture = object : ServiceLectureRequestCallback {
+            override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {
+                binding.btnDeadline.visibility= View.GONE
+                binding.btnEdit.visibility= View.GONE
+            }
+            override fun onServiceLectureResponseFailure() {}
+        }).serviceRequest()
     }
 }
