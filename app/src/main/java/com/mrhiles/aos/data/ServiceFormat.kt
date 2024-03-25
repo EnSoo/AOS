@@ -68,14 +68,16 @@ data class ResponseLecture (
     val location:String="",             // 강의 지역
     val place_name:String="",           // 스터디룸 장소명
     var longitude:String="",                    // X 좌표값, 경위도인 경우 longitude(경도)
-    var latitue:String="",                    // Y 좌표값, 경위도인 경우 latitue(위도)
+    var latitude:String="",                    // Y 좌표값, 경위도인 경우 latitude(위도)
     val place_nickname:String="",       // 스터디룸 별명
     val join_max:String="",             // 최대인원
     val join_min:String="",             // 최소인원
     val join_num:String="",             // 참여인원
     val notification:String="",         // 알릴내용
     val contract:String="",             // 연락처
-    val state:String="",                // 강의 모집 진행중일 경우 start, 아닐 경우 stop
-    val myLecture:String="",            // 내 강의일 경우 TRUE, 아닐 경우 FALSE
-    val studentList:String="",          // 학생 리스트
+    val state:String="",                // 강의 모집 진행중일 경우 START, 아닐 경우 STOP
+    val myLecture:String="",            // 내 강의일 경우 1, 아닐 경우 0
+    val created_at:String="",           // 강의 생성날짜
+    val lecture_join:String="",         // 해당 강의에 참여하고 있을 경우 1, 아닐 경우 0
+    val studentList:String=""           // 학생 리스트
 )

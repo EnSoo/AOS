@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
 import com.mrhiles.aos.data.Lecture
 import com.mrhiles.aos.data.ResponseLecture
 import com.mrhiles.aos.databinding.ActivityLectureSetBinding
@@ -21,6 +22,7 @@ import java.util.Calendar
 // 강의 생성, 수정
 class LectureSetActivity : AppCompatActivity() {
     private val binding by lazy { ActivityLectureSetBinding.inflate(layoutInflater) }
+    private var lectureId:String=""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -31,7 +33,26 @@ class LectureSetActivity : AppCompatActivity() {
         if(type=="add") {
             binding.activityName.text="강의 생성"
         } else if(type=="modify") {
+            // 액티비티 제목
             binding.activityName.text="강의 수정"
+
+            val s=intent.getStringExtra("lecture")
+
+            val responseLecture= Gson().fromJson(s, ResponseLecture::class.java)
+            lectureId=responseLecture.lecture_id
+            binding.inputTitle.editText!!.setText(responseLecture.title)
+            binding.inputIntroduction.editText!!.setText(responseLecture.introduction)
+            binding.inputStartDate.editText!!.setText(responseLecture.start_date)
+            binding.inputEndDate.editText!!.setText(responseLecture.end_date)
+            binding.inputStudyroomId.editText!!.setText(responseLecture.studyroom_id)
+            binding.inputLocation.editText!!.setText(responseLecture.location)
+            binding.inputPlaceName.editText!!.setText(responseLecture.place_name)
+            binding.inputX.editText!!.setText(responseLecture.longitude)
+            binding.inputY.editText!!.setText(responseLecture.latitude)
+            binding.inputJoinMax.editText!!.setText(responseLecture.join_max)
+            binding.inputJoinMin.editText!!.setText(responseLecture.join_min)
+            binding.inputNotification.editText!!.setText(responseLecture.notification)
+            binding.inputContract.editText!!.setText(responseLecture.contract)
         }
 
 
@@ -124,10 +145,6 @@ class LectureSetActivity : AppCompatActivity() {
 
     private fun lectureProcess(textInputLayoutList:MutableMap<String,TextInputLayout>, type:String) {
         textInputLayoutList.also {tl ->
-            var lectureId=""
-            if(type=="modify") {
-                lectureId=intent.getStringExtra("lecture_id")!!
-            }
             val lecture= Lecture(
                 lecture_id = lectureId,
                 title= tl["title"]!!.editText!!.text.toString(),
@@ -156,8 +173,8 @@ class LectureSetActivity : AppCompatActivity() {
 
                 override fun onServiceLectureResponseFailure() {
                     var ment:String=""
-                    if(type=="add") { ment="강의를 생성에 실패하였습니다." }
-                    if(type=="modify") { ment="강의를 생성에 성공하였습니다." }
+                    if(type=="add") { ment="강의 생성에 실패하였습니다." }
+                    if(type=="modify") { ment="강의 수정에 성공하였습니다." }
                     Toast.makeText(this@LectureSetActivity, "$ment", Toast.LENGTH_SHORT).show()
                     finish()
                 }

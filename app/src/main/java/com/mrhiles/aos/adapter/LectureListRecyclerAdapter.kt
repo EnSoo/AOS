@@ -32,9 +32,14 @@ class LectureListRecyclerAdapter(val context: Context, val documents: List<Respo
         val lecture=documents[position]
         if(lecture.state=="STOP") { // 만약 강의가 마감 되었으면,
             if(lecture.myLecture=="1") { // 하지만 내 강의 인 경우
+                holder.binding.lectureItem.setStrokeColor(Color.parseColor("#FF0000FF"))
                 holder.binding.lectureItem.setCardBackgroundColor(Color.parseColor("#FFB3B2B2"))
             } else {
                 return
+            }
+        } else {
+            if(lecture.myLecture=="1") { // 강의가 진행중이고 내 강의 인 경우
+                holder.binding.lectureItem.setStrokeColor(Color.parseColor("#FF0000FF"))
             }
         }
         val start_date=lecture.start_date.split(" ");
@@ -70,7 +75,6 @@ class LectureListRecyclerAdapter(val context: Context, val documents: List<Respo
         holder.binding.reserveJoinMax.text=lecture.join_max
         holder.binding.reserveJoinMin.text="(최소 ${lecture.join_min}명)"
         holder.binding.lectureItem.setOnClickListener {
-            Toast.makeText(context, "상세 페이지로 넘어갑니다.", Toast.LENGTH_SHORT).show()
             val intent= Intent(context, LectureDetailActivity::class.java)
             //StudyRoom에 대한 데이터를 보내기
             val gson= Gson()
