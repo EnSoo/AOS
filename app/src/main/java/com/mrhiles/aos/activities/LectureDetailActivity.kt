@@ -1,13 +1,20 @@
 package com.mrhiles.aos.activities
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.gson.Gson
+import com.mrhiles.aos.G
 import com.mrhiles.aos.R
+import com.mrhiles.aos.adapter.StudentListRecylcerAdapter
+import com.mrhiles.aos.adapter.StudyRoomTapHomeFavorRecyclerAdapter
 import com.mrhiles.aos.data.Lecture
 import com.mrhiles.aos.data.ResponseLecture
+import com.mrhiles.aos.data.StudentList
+import com.mrhiles.aos.data.StudentListResponse
 import com.mrhiles.aos.databinding.ActivityLectureDetailBinding
 import com.mrhiles.aos.network.ServiceLectureRequestCallback
 import com.mrhiles.aos.network.ServiceRequest
@@ -20,6 +27,7 @@ import com.naver.maps.map.overlay.Align
 import com.naver.maps.map.overlay.InfoWindow
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.Overlay
+import kotlin.concurrent.thread
 
 class LectureDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     private val binding by lazy { ActivityLectureDetailBinding.inflate(layoutInflater) }
@@ -56,10 +64,15 @@ class LectureDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             finish()
         }
 
+        //학생 리스트 불러오기
+        studentList(responseLecture.myLecture, responseLecture.lecture_id)
+
         //학생참여버튼
         binding.btnJoin.setOnClickListener { clickJoin(responseLecture.lecture_id) }
+
         //학생취소버튼
         binding.btnWithdraw.setOnClickListener { clickWithdraw(responseLecture.lecture_id)  }
+
         //마감버튼
         binding.btnDeadline.setOnClickListener { clickDeadline(responseLecture.lecture_id) }
 
@@ -169,15 +182,25 @@ class LectureDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun clickJoin(lecture_id:String) { // 학생 강의 참여
-        val lecture= Lecture(lecture_id = lecture_id, type="studentjoin")
-        ServiceRequest(this,"/user/lecture.php",lecture, callbackLecture = object : ServiceLectureRequestCallback {
-            override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {
-                binding.btnJoin.visibility= View.GONE
-                binding.btnWithdraw.visibility= View.VISIBLE
+        if(G.userInfo.ProfileUrl=="") {
+            val lecture = Lecture(lecture_id = lecture_id, type = "studentjoin")
+            ServiceRequest(
+                this,
+                "/user/lecture.php",
+                lecture,
+                callbackLecture = object : ServiceLectureRequestCallback {
+                    override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {}
+                    override fun onServiceLectureResponseFailure() {}
+                }).serviceRequest()
+        } else {
+            val builder = AlertDialog.Builder(this)
+            builder.setMessage("프로필 메뉴에서 사용자 정보를 설정 해주세요")
+            builder.setPositiveButton("확인") { dialog, _ ->
+                // 확인 버튼을 눌렀을 때 실행할 코드
+                dialog.dismiss()
             }
-
-            override fun onServiceLectureResponseFailure() {}
-        }).serviceRequest()
+            builder.show()
+        }
     }
 
     private fun clickWithdraw(lecture_id:String) { // 학생 강의 취소
@@ -201,4 +224,17 @@ class LectureDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onServiceLectureResponseFailure() {}
         }).serviceRequest()
     }
+
+    private fun studentList(myLecture: String, lecture_id:String) {
+        val lecture= Lecture(lecture_id = lecture_id, type="studentlist")
+        if(myLecture != "1")
+            ServiceRequest(this,"/user/lecture.php",lecture, callbackLecture = object : ServiceLectureRequestCallback {
+            override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {
+                val studentList=Gson().fromJson(response?.get(0)?.studentList,Array<StudentList>::class.java).toList()
+                binding.studentListRecycler.adapter = StudentListRecylcerAdapter(this@LectureDetailActivity, studentList)
+            }
+            override fun onServiceLectureResponseFailure() {}
+        }).serviceRequest()
+    }
+
 }

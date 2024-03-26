@@ -7,21 +7,27 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.mrhiles.aos.G
 import com.mrhiles.aos.R
 import com.mrhiles.aos.activities.MainActivity
 import com.mrhiles.aos.data.Lecture
 import com.mrhiles.aos.data.LoadStudyRoomFaovr
 import com.mrhiles.aos.data.ResponseLecture
+import com.mrhiles.aos.data.StudentList
+import com.mrhiles.aos.data.StudentListResponse
 import com.mrhiles.aos.data.UserCheck
 import com.mrhiles.aos.data.UserInfo
 import com.mrhiles.aos.data.requestData
 import com.mrhiles.aos.data.responseData
 import com.mrhiles.aos.data.studyRoomFaovr
+import org.json.JSONArray
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.net.URLEncoder
+import kotlin.concurrent.thread
 
 class ServiceRequest(
     val context: Context,
@@ -81,7 +87,6 @@ class ServiceRequest(
                 call: Call<responseData>,
                 response: Response<responseData>
             ) {
-                Log.d("response","${response}")
                 if (response.isSuccessful) {
                     val s = response.body()
                     s ?: return
@@ -165,8 +170,13 @@ class ServiceRequest(
             Toast.makeText(context, "강의 마감이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
             callbackLecture?.onServiceLectureResponseSuccess()
         } else if(param.type == "studentlist") {
+
             // 강의 생성자가 참여한 학생 리스트를 볼 경우
-            callbackLecture?.onServiceLectureResponseSuccess()
+            val lectureList:MutableList<ResponseLecture> = mutableListOf()
+            val studentListResponse = Gson().fromJson(responseData, StudentListResponse::class.java)
+            lectureList.add(ResponseLecture(studentList = Gson().toJson(studentListResponse.studentList)))
+
+            callbackLecture?.onServiceLectureResponseSuccess(lectureList.toList())
         } else if(param.type == "studentjoin") {
             Toast.makeText(context, "강의 신청이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
             callbackLecture?.onServiceLectureResponseSuccess()
@@ -238,7 +248,7 @@ class ServiceRequest(
         G.isLogin=false
         G.accessToken=""
         G.refreshToken=""
-        G.userInfo= UserInfo("","","")
+        G.userInfo= UserInfo("","","","")
     }
 
     private fun initSqlLite() {

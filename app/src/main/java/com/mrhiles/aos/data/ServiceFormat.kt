@@ -81,3 +81,15 @@ data class ResponseLecture (
     val lecture_join:String="",         // 해당 강의에 참여하고 있을 경우 1, 아닐 경우 0
     val studentList:String=""           // 학생 리스트
 )
+
+// 2.3 학생 리스트 정보
+data class StudentList(
+    val student_id:String="",            // provider_id
+    val nickname:String="",              // nickname
+    val profile_image:String="",         // 프로파일 이미지
+    val applidate_day:String=""          // 강의 신청 날짜
+)
+
+data class StudentListResponse(
+    val studentList: List<StudentList> = listOf()
+)

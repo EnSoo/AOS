@@ -26,7 +26,7 @@ class IntroActivity : AppCompatActivity() {
             G.isLogin=getBoolean("is_login",false)
             G.accessToken=getString("access_token","")!!
             G.refreshToken=getString("refresh_token","")!!
-            G.userInfo= UserInfo(getString("providerId","")!!,getString("email","")!!, getString("login_type","")!!)
+            G.userInfo= UserInfo(getString("providerId","")!!,getString("email","")!!, getString("login_type","")!!, getString("profile_url","")!!)
         }
     }
 }

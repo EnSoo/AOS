@@ -116,9 +116,11 @@
                     android:textSize="12sp"
                     android:textColor="@color/gray"/>
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/student_list"
+                    android:id="@+id/student_list_recycler"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    android:orientation="vertical"/>
             </LinearLayout>
             <LinearLayout
                 android:id="@+id/layout_contents3"

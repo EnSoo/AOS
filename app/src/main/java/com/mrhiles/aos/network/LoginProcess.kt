@@ -20,7 +20,7 @@ class LoginProcess(val context:Context, val login_type:String, val access_token:
             responseData.also {
                 G.accessToken=it.access_token
                 G.refreshToken=it.refresh_token
-                G.userInfo= UserInfo(it.id,it.email,login_type)
+                G.userInfo= UserInfo(it.id,it.email,login_type,"")
              }
     }
     private fun setsharedPreferences() {
