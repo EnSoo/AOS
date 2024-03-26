@@ -48,7 +48,6 @@ class BottomListFragment : Fragment() {
         binding.editLecture.setOnClickListener {
             //lecture 페이지로 이동
             val intent= Intent(context, LectureSetActivity::class.java)
-
             intent.putExtra("type","add") // Type이 Item일 경우 1개만 검색
             resultLauncher.launch(intent)
         }
@@ -69,7 +68,7 @@ class BottomListFragment : Fragment() {
 
     }
     // 글 추가 완료 후 새로고침
-    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(), {lectureLoad() })
+    private val resultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult(), {lectureLoad(true) })
 
     private fun searchLectureList() {
         val request= Lecture(type="search", search_location = location, search_string = searchQuery, page = "1")
@@ -85,7 +84,11 @@ class BottomListFragment : Fragment() {
             override fun onServiceLectureResponseFailure() {}
         }).serviceRequest()
     }
-    private fun lectureLoad() {
+    fun lectureLoad(init:Boolean=false) {
+        if(init==true) {
+            lectureList.clear()
+            binding.listRecycler.adapter!!.notifyDataSetChanged()
+        }
         val request= Lecture(type="load", page = "1")
         ServiceRequest(requireContext(),"/user/lecture.php",request,callbackLecture = object : ServiceLectureRequestCallback{
             override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {

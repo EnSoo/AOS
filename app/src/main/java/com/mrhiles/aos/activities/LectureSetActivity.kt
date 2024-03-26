@@ -4,14 +4,17 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
+import com.mrhiles.aos.R
 import com.mrhiles.aos.data.Lecture
 import com.mrhiles.aos.data.ResponseLecture
 import com.mrhiles.aos.databinding.ActivityLectureSetBinding
+import com.mrhiles.aos.fragments.BottomListFragment
 import com.mrhiles.aos.network.ServiceLectureRequestCallback
 import com.mrhiles.aos.network.ServiceRequest
 
@@ -105,8 +108,8 @@ class LectureSetActivity : AppCompatActivity() {
         }
 
         // 뒤로가기 버튼 및 취소 버튼 클릭 시 액티비티 종료
-        binding.arrowBack.setOnClickListener { finish() }
-        binding.btnCancel.setOnClickListener { finish() }
+        binding.arrowBack.setOnClickListener { closeActivity() }
+        binding.btnCancel.setOnClickListener { closeActivity() }
         binding.btnSubmit.setOnClickListener {
             val textInputLayoutList:MutableMap<String,TextInputLayout> = mutableMapOf()
 
@@ -168,7 +171,7 @@ class LectureSetActivity : AppCompatActivity() {
                     if(type=="add") { ment="강의를 성공적으로 생성하였습니다." }
                     if(type=="modify") { ment="강의를 성공적으로 수정하였습니다." }
                     Toast.makeText(this@LectureSetActivity, "$ment", Toast.LENGTH_SHORT).show()
-                    finish()
+                    closeActivity()
                 }
 
                 override fun onServiceLectureResponseFailure() {
@@ -176,7 +179,7 @@ class LectureSetActivity : AppCompatActivity() {
                     if(type=="add") { ment="강의 생성에 실패하였습니다." }
                     if(type=="modify") { ment="강의 수정에 성공하였습니다." }
                     Toast.makeText(this@LectureSetActivity, "$ment", Toast.LENGTH_SHORT).show()
-                    finish()
+                    closeActivity()
                 }
             }).serviceRequest()
         }
@@ -243,5 +246,9 @@ class LectureSetActivity : AppCompatActivity() {
             timePickerDialog.show()
         }
         datePickerDialog.show()
+    }
+
+    private fun closeActivity() {
+        finish()
     }
 }

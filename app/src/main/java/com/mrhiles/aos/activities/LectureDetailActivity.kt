@@ -16,6 +16,7 @@ import com.mrhiles.aos.data.ResponseLecture
 import com.mrhiles.aos.data.StudentList
 import com.mrhiles.aos.data.StudentListResponse
 import com.mrhiles.aos.databinding.ActivityLectureDetailBinding
+import com.mrhiles.aos.fragments.BottomListFragment
 import com.mrhiles.aos.network.ServiceLectureRequestCallback
 import com.mrhiles.aos.network.ServiceRequest
 import com.naver.maps.geometry.LatLng
@@ -61,7 +62,7 @@ class LectureDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             intent.putExtra("lecture",s)
             intent.putExtra("type","modify") // Type이 Item일 경우 1개만 검색
             startActivity(intent)
-            finish()
+            closeActivity()
         }
 
         //학생 리스트 불러오기
@@ -82,7 +83,7 @@ class LectureDetailActivity : AppCompatActivity(), OnMapReadyCallback {
         }
 
         // 뒤로가기 종료
-        binding.arrowBack.setOnClickListener { finish() }
+        binding.arrowBack.setOnClickListener { closeActivity() }
 
         val fm = supportFragmentManager
         val mapFragment = fm.findFragmentById(R.id.map) as MapFragment?
@@ -227,7 +228,7 @@ class LectureDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun studentList(myLecture: String, lecture_id:String) {
         val lecture= Lecture(lecture_id = lecture_id, type="studentlist")
-        if(myLecture != "1")
+        if(myLecture == "1")
             ServiceRequest(this,"/user/lecture.php",lecture, callbackLecture = object : ServiceLectureRequestCallback {
             override fun onServiceLectureResponseSuccess(response: List<ResponseLecture>?) {
                 val studentList=Gson().fromJson(response?.get(0)?.studentList,Array<StudentList>::class.java).toList()
@@ -236,5 +237,7 @@ class LectureDetailActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onServiceLectureResponseFailure() {}
         }).serviceRequest()
     }
-
+    private fun closeActivity() {
+        finish()
+    }
 }

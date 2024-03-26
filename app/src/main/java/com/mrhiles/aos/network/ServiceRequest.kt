@@ -173,10 +173,15 @@ class ServiceRequest(
 
             // 강의 생성자가 참여한 학생 리스트를 볼 경우
             val lectureList:MutableList<ResponseLecture> = mutableListOf()
-            val studentListResponse = Gson().fromJson(responseData, StudentListResponse::class.java)
-            lectureList.add(ResponseLecture(studentList = Gson().toJson(studentListResponse.studentList)))
+            Log.d("11","${responseData}")
+            if(responseData!="[]")
+            {
 
-            callbackLecture?.onServiceLectureResponseSuccess(lectureList.toList())
+                val studentListResponse = Gson().fromJson(responseData, StudentListResponse::class.java)
+                lectureList.add(ResponseLecture(studentList = Gson().toJson(studentListResponse.studentList)))
+                callbackLecture?.onServiceLectureResponseSuccess(lectureList.toList())
+            }
+
         } else if(param.type == "studentjoin") {
             Toast.makeText(context, "강의 신청이 성공적으로 되었습니다.", Toast.LENGTH_SHORT).show()
             callbackLecture?.onServiceLectureResponseSuccess()
